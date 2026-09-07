@@ -36,9 +36,9 @@ message Publicacao {
 
 service ForumService {
     rpc inscrever(SolicitacaoInscricao) returns (Forum);
-    rpc publicar(SolicitacaoPublicacao) returns (Publicacao);
+    rpc publicar(SolicitacaoPublicacao) returns (Confirmacao);
 }
 
 service UsuarioForumService {
-    rpc receber(Publicacao) returns (Confirmacao);
+    rpc enviar(Publicacao) returns (Confirmacao);
 }

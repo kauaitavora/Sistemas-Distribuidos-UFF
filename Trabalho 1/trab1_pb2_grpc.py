@@ -42,7 +42,7 @@ class ForumServiceStub:
         self.publicar = channel.unary_unary(
                 '/ForumService/publicar',
                 request_serializer=trab1__pb2.SolicitacaoPublicacao.SerializeToString,
-                response_deserializer=trab1__pb2.Publicacao.FromString,
+                response_deserializer=trab1__pb2.Confirmacao.FromString,
                 _registered_method=True)
 
 
@@ -72,7 +72,7 @@ def add_ForumServiceServicer_to_server(servicer, server):
             'publicar': grpc.unary_unary_rpc_method_handler(
                     servicer.publicar,
                     request_deserializer=trab1__pb2.SolicitacaoPublicacao.FromString,
-                    response_serializer=trab1__pb2.Publicacao.SerializeToString,
+                    response_serializer=trab1__pb2.Confirmacao.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -128,7 +128,7 @@ class ForumService:
             target,
             '/ForumService/publicar',
             trab1__pb2.SolicitacaoPublicacao.SerializeToString,
-            trab1__pb2.Publicacao.FromString,
+            trab1__pb2.Confirmacao.FromString,
             options,
             channel_credentials,
             insecure,
@@ -149,8 +149,8 @@ class UsuarioForumServiceStub:
         Args:
             channel: A grpc.Channel.
         """
-        self.receber = channel.unary_unary(
-                '/UsuarioForumService/receber',
+        self.enviar = channel.unary_unary(
+                '/UsuarioForumService/enviar',
                 request_serializer=trab1__pb2.Publicacao.SerializeToString,
                 response_deserializer=trab1__pb2.Confirmacao.FromString,
                 _registered_method=True)
@@ -159,7 +159,7 @@ class UsuarioForumServiceStub:
 class UsuarioForumServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
-    def receber(self, request, context):
+    def enviar(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -168,8 +168,8 @@ class UsuarioForumServiceServicer:
 
 def add_UsuarioForumServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'receber': grpc.unary_unary_rpc_method_handler(
-                    servicer.receber,
+            'enviar': grpc.unary_unary_rpc_method_handler(
+                    servicer.enviar,
                     request_deserializer=trab1__pb2.Publicacao.FromString,
                     response_serializer=trab1__pb2.Confirmacao.SerializeToString,
             ),
@@ -185,7 +185,7 @@ class UsuarioForumService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def receber(request,
+    def enviar(request,
             target,
             options=(),
             channel_credentials=None,
@@ -198,7 +198,7 @@ class UsuarioForumService:
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/UsuarioForumService/receber',
+            '/UsuarioForumService/enviar',
             trab1__pb2.Publicacao.SerializeToString,
             trab1__pb2.Confirmacao.FromString,
             options,
