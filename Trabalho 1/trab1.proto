@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+message Confirmacao {
+    bool sucesso = 1;
+}
+
+message Usuario {
+    uint64 id = 1;
+    string nome = 2;
+}
+
+message SolicitacaoInscricao {
+    uint64 id_forum = 1;
+    Usuario usuario = 2;
+}
+
+message Forum {
+    uint64 id_forum = 1;
+    string timestamp_inscricao = 2;
+    string nome_forum = 3;
+}
+
+message SolicitacaoPublicacao {
+    uint64 id_forum = 1;
+    uint64 id_usuario = 2;
+    string mensagem = 3;
+}
+
+message Publicacao {
+    uint64 id_mensagem = 1;
+    uint64 id_forum = 2;
+    uint64 id_usuario = 3;
+    string timestamp = 4;
+    string mensagem = 5;
+}
+
+service ForumService {
+    rpc inscrever(SolicitacaoInscricao) returns (Forum);
+    rpc publicar(SolicitacaoPublicacao) returns (Publicacao);
+}
+
+service UsuarioForumService {
+    rpc receber(Publicacao) returns (Confirmacao);
+}
