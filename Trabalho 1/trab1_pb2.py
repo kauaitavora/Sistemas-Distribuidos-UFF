@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0btrab1.proto\"\x1e\n\x0b\x43onfirmacao\x12\x0f\n\x07sucesso\x18\x01 \x01(\x08\"#\n\x07Usuario\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x0c\n\x04nome\x18\x02 \x01(\t\"C\n\x14SolicitacaoInscricao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x19\n\x07usuario\x18\x02 \x01(\x0b\x32\x08.Usuario\"J\n\x05\x46orum\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x1b\n\x13timestamp_inscricao\x18\x02 \x01(\t\x12\x12\n\nnome_forum\x18\x03 \x01(\t\"O\n\x15SolicitacaoPublicacao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x12\n\nid_usuario\x18\x02 \x01(\x04\x12\x10\n\x08mensagem\x18\x03 \x01(\t\"l\n\nPublicacao\x12\x13\n\x0bid_mensagem\x18\x01 \x01(\x04\x12\x10\n\x08id_forum\x18\x02 \x01(\x04\x12\x12\n\nid_usuario\x18\x03 \x01(\x04\x12\x11\n\ttimestamp\x18\x04 \x01(\t\x12\x10\n\x08mensagem\x18\x05 \x01(\t2l\n\x0c\x46orumService\x12*\n\tinscrever\x12\x15.SolicitacaoInscricao\x1a\x06.Forum\x12\x30\n\x08publicar\x12\x16.SolicitacaoPublicacao\x1a\x0c.Confirmacao2:\n\x13UsuarioForumService\x12#\n\x06\x65nviar\x12\x0b.Publicacao\x1a\x0c.Confirmacaob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0btrab1.proto\"\x1e\n\x0b\x43onfirmacao\x12\x0f\n\x07sucesso\x18\x01 \x01(\x08\"#\n\x07Usuario\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x0c\n\x04nome\x18\x02 \x01(\t\"C\n\x14SolicitacaoInscricao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x19\n\x07usuario\x18\x02 \x01(\x0b\x32\x08.Usuario\"O\n\x15SolicitacaoPublicacao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x12\n\nid_usuario\x18\x02 \x01(\x04\x12\x10\n\x08mensagem\x18\x03 \x01(\t\"l\n\nPublicacao\x12\x13\n\x0bid_mensagem\x18\x01 \x01(\x04\x12\x10\n\x08id_forum\x18\x02 \x01(\x04\x12\x12\n\nid_usuario\x18\x03 \x01(\x04\x12\x11\n\ttimestamp\x18\x04 \x01(\t\x12\x10\n\x08mensagem\x18\x05 \x01(\t2s\n\x0c\x46orumService\x12\x31\n\tinscrever\x12\x15.SolicitacaoInscricao\x1a\x0b.Publicacao0\x01\x12\x30\n\x08publicar\x12\x16.SolicitacaoPublicacao\x1a\x0c.Confirmacaob\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -37,14 +37,10 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_USUARIO']._serialized_end=82
   _globals['_SOLICITACAOINSCRICAO']._serialized_start=84
   _globals['_SOLICITACAOINSCRICAO']._serialized_end=151
-  _globals['_FORUM']._serialized_start=153
-  _globals['_FORUM']._serialized_end=227
-  _globals['_SOLICITACAOPUBLICACAO']._serialized_start=229
-  _globals['_SOLICITACAOPUBLICACAO']._serialized_end=308
-  _globals['_PUBLICACAO']._serialized_start=310
-  _globals['_PUBLICACAO']._serialized_end=418
-  _globals['_FORUMSERVICE']._serialized_start=420
-  _globals['_FORUMSERVICE']._serialized_end=528
-  _globals['_USUARIOFORUMSERVICE']._serialized_start=530
-  _globals['_USUARIOFORUMSERVICE']._serialized_end=588
+  _globals['_SOLICITACAOPUBLICACAO']._serialized_start=153
+  _globals['_SOLICITACAOPUBLICACAO']._serialized_end=232
+  _globals['_PUBLICACAO']._serialized_start=234
+  _globals['_PUBLICACAO']._serialized_end=342
+  _globals['_FORUMSERVICE']._serialized_start=344
+  _globals['_FORUMSERVICE']._serialized_end=459
 # @@protoc_insertion_point(module_scope)
