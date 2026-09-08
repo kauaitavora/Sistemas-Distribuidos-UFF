@@ -17,6 +17,7 @@ FORUNS = {
     3: "Filmes"
 }
 
+
 class ForumServiceServicer(trab1_pb2_grpc.ForumServiceServicer):
 
     def __init__(self):
@@ -173,6 +174,7 @@ class ForumServiceServicer(trab1_pb2_grpc.ForumServiceServicer):
         return trab1_pb2.Confirmacao(
             sucesso=True
         )
+    
 
 def serve():
     servidor_eventos = grpc.server(
