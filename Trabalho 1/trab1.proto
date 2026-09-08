@@ -14,12 +14,6 @@ message SolicitacaoInscricao {
     Usuario usuario = 2;
 }
 
-message Forum {
-    uint64 id_forum = 1;
-    string timestamp_inscricao = 2;
-    string nome_forum = 3;
-}
-
 message SolicitacaoPublicacao {
     uint64 id_forum = 1;
     uint64 id_usuario = 2;
@@ -35,10 +29,11 @@ message Publicacao {
 }
 
 service ForumService {
-    rpc inscrever(SolicitacaoInscricao) returns (Forum);
-    rpc publicar(SolicitacaoPublicacao) returns (Confirmacao);
-}
 
-service UsuarioForumService {
-    rpc enviar(Publicacao) returns (Confirmacao);
+    // O cliente se inscreve em um fórum e recebe,
+    // pelo mesmo fluxo, as novas publicações daquele fórum.
+    rpc inscrever(SolicitacaoInscricao) returns (stream Publicacao);
+
+    // O cliente publica uma mensagem em um fórum.
+    rpc publicar(SolicitacaoPublicacao) returns (Confirmacao);
 }
