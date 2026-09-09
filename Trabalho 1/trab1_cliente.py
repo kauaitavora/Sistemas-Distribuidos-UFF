@@ -2,9 +2,10 @@ import grpc
 import trab1_pb2
 import trab1_pb2_grpc
 from datetime import datetime
+from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import HorizontalGroup, VerticalGroup, Horizontal
-from textual.widgets import Footer, Header, Button, Label, ContentSwitcher, RichLog
+from textual.widgets import Footer, Header, Button, Label, ContentSwitcher, RichLog, Input
 
 FORUNS = {
     1: "Programação",
@@ -13,6 +14,7 @@ FORUNS = {
 }
 
 class Forum(VerticalGroup):
+    Usuario = trab1_pb2.Usuario(id=1, nome="kauai")
 
     def __init__(self, ForumService, id_forum, id_css) -> None:
         super().__init__(id=id_css)
@@ -24,6 +26,7 @@ class Forum(VerticalGroup):
     def compose(self) -> ComposeResult:
         yield ForumWarning(self.forum_name, self.inscrever)
         yield RichLog(markup=False, wrap=True)
+        yield ForumMessage(self.publicar, placeholder="Mensagem")
 
     def inscrever(self):
         # evita abrir multiplas inscricoes
@@ -32,7 +35,7 @@ class Forum(VerticalGroup):
         
         solicitacao = trab1_pb2.SolicitacaoInscricao(
             id_forum=self.id_forum,
-            usuario=trab1_pb2.Usuario(id=1, nome="kauai"),
+            usuario= Forum.Usuario,
         )
 
         try:
@@ -44,8 +47,17 @@ class Forum(VerticalGroup):
         # remove o warning e escreve no log
         self.query_one(ForumWarning).display = False
         self.query_one(RichLog).write("Aguardando publicações…")
-        
-        
+    
+    @work()
+    async def publicar(self, message):
+        # teste de publicaçao, ainda não envia para o servidor
+        solicitacao = trab1_pb2.SolicitacaoPublicacao(
+            id_forum = self.id_forum,
+            id_usuario = Forum.Usuario.id,
+            mensagem = message
+        )
+
+        self.query_one(RichLog).write(f"{Forum.Usuario.nome}: {message}")
 
 class ForumWarning(VerticalGroup):
 
@@ -66,6 +78,17 @@ class ForumWarning(VerticalGroup):
             event.stop()
             self.inscrever()
 
+class ForumMessage(Input):
+    
+    def __init__(self, publicar, placeholder):
+        super().__init__(placeholder)
+        self.publicar = publicar
+
+    def on_input_submitted(self):
+        self.publicar(self.value)
+        
+
+
 class ForumApp(App):
     CSS_PATH = "trab1_cliente.tcss"
 
@@ -81,7 +104,7 @@ class ForumApp(App):
         with VerticalGroup(id="main-layout"):
             with Horizontal(id="menu-buttons"):
                 for id_forum, forum in FORUNS.items():
-                    yield Button(forum, id=f"open-forum-{id_forum}")
+                    yield Button(forum, id=f"open-forum-{id_forum}", classes="forum-buttons")
             with ContentSwitcher(initial="forum-1"):
                 for id_forum, forum in FORUNS.items():
                     yield Forum(

@@ -14,6 +14,10 @@ Screen {
     width: 100%;
 }
 
+.forum-buttons {
+	margin: 0 1;
+}
+
 ContentSwitcher {
     border: round $primary;
     width: 100%;
@@ -22,6 +26,7 @@ ContentSwitcher {
 
 Forum {
 	height: 100%;
+	padding: 1 2;
 }
 
 ForumWarning {
@@ -42,5 +47,15 @@ ForumWarning > Horizontal {
 
 .subscribed ForumWarning {
 	display: none;
+}
+
+RichLog {
+	padding: 1;
+	height: 90%;
+}
+
+Input {
+	margin: 1;
+	height: 10%
 }
 
