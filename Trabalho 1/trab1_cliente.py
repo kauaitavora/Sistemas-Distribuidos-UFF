@@ -1,3 +1,4 @@
+import argparse
 import grpc
 import trab1_pb2
 import trab1_pb2_grpc
@@ -14,19 +15,19 @@ FORUNS = {
 }
 
 class Forum(VerticalGroup):
-    Usuario = trab1_pb2.Usuario(id=1, nome="kauai")
 
-    def __init__(self, ForumService, id_forum, id_css) -> None:
+    def __init__(self, ForumService, id_forum, usuario, id_css) -> None:
         super().__init__(id=id_css)
         self.ForumService = ForumService
         self.id_forum = id_forum
+        self.usuario = usuario
         self.forum_name = FORUNS[id_forum]
         self.stream = None
 
     def compose(self) -> ComposeResult:
         yield ForumWarning(self.forum_name, self.inscrever)
         yield RichLog(markup=False, wrap=True)
-        yield ForumMessage(self.publicar, placeholder="Mensagem")
+        yield ForumMessage(self.publicar, disabled=True)
 
     def inscrever(self):
         # evita abrir multiplas inscricoes
@@ -35,29 +36,73 @@ class Forum(VerticalGroup):
         
         solicitacao = trab1_pb2.SolicitacaoInscricao(
             id_forum=self.id_forum,
-            usuario= Forum.Usuario,
+            usuario= self.usuario,
         )
 
         try:
             self.stream = self.ForumService.inscrever(solicitacao)
         except grpc.RpcError as error:
-            self.notify(str(error), severity="error")
+            self.erro_inscricao(error.details() or str(error))
             return
 
-        # remove o warning e escreve no log
+        # remove o warning, mostra o input e pega as publicacoes
         self.query_one(ForumWarning).display = False
-        self.query_one(RichLog).write("Aguardando publicações…")
-    
-    @work()
-    async def publicar(self, message):
-        # teste de publicaçao, ainda não envia para o servidor
+        self.query_one(ForumMessage).disabled = False
+        self.get_publicacoes()
+
+    @work(thread=True)
+    def publicar(self, message):
         solicitacao = trab1_pb2.SolicitacaoPublicacao(
             id_forum = self.id_forum,
-            id_usuario = Forum.Usuario.id,
+            id_usuario = self.usuario.id,
             mensagem = message
         )
 
-        self.query_one(RichLog).write(f"{Forum.Usuario.nome}: {message}")
+        try:
+            confirmacao = self.ForumService.publicar(solicitacao)
+            if confirmacao.sucesso:
+                self.app.call_from_thread(
+                    self.publicacao_confirmada
+                )
+        except grpc.RpcError as error:
+            self.app.call_from_thread(
+                self.notify,
+                error.details() or str(error),
+                severity="error",
+            )
+
+    @work(thread=True)
+    def get_publicacoes(self):
+        try:
+            for publicacao in self.stream:
+                self.app.call_from_thread(
+                    self.exibir_publicacao,
+                    publicacao
+                )
+        except grpc.RpcError as error:
+            self.app.call_from_thread(
+                self.erro_inscricao,
+                error.details() or str(error)
+            )
+
+    def exibir_publicacao(self, publicacao):
+        self.query_one(RichLog).write(
+            f"{publicacao.id_usuario}: "
+            f"{publicacao.mensagem}"
+        )
+
+    def erro_inscricao(self, error):
+        self.stream = None
+        self.query_one(ForumWarning).display = True
+        self.notify(error, severity="error")
+
+    def publicacao_confirmada(self) -> None:
+        self.query_one(ForumMessage).clear()
+
+    def on_unmount(self) -> None:
+        if self.stream is not None:
+            self.stream.cancel()
+
 
 class ForumWarning(VerticalGroup):
 
@@ -80,8 +125,8 @@ class ForumWarning(VerticalGroup):
 
 class ForumMessage(Input):
     
-    def __init__(self, publicar, placeholder):
-        super().__init__(placeholder)
+    def __init__(self, publicar, disabled):
+        super().__init__(disabled=disabled)
         self.publicar = publicar
 
     def on_input_submitted(self):
@@ -96,6 +141,7 @@ class ForumApp(App):
         # inicializa o serviço que será passado para cada forum
         self.channel = grpc.insecure_channel('localhost:2211')
         self.forum_service_stub = trab1_pb2_grpc.ForumServiceStub(self.channel)
+        self.usuario = self.get_usuario()
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -110,6 +156,7 @@ class ForumApp(App):
                     yield Forum(
                         self.forum_service_stub,
                         id_forum,
+                        self.usuario,
                         id_css=f"forum-{id_forum}")
 
     def on_mount(self) -> None:
@@ -122,6 +169,18 @@ class ForumApp(App):
             self.query_one(ContentSwitcher).current = (
                 button_id.removeprefix("open-")
             )
+
+    def get_usuario(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("id", type=int)
+        parser.add_argument("nome")
+        args = parser.parse_args()
+
+        return trab1_pb2.Usuario(
+            id=args.id,
+            nome=args.nome,
+        )
+
 
 if __name__ == "__main__":
     app = ForumApp()
