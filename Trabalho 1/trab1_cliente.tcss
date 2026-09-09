@@ -1,0 +1,46 @@
+Screen {
+    align: center top;
+    padding: 1;
+}
+
+#main-layout {
+    width: 90%;
+    height: 1fr;
+}
+
+#menu-buttons {
+	margin: 1;
+    height: auto;
+    width: 100%;
+}
+
+ContentSwitcher {
+    border: round $primary;
+    width: 100%;
+    height: 1fr;
+}
+
+Forum {
+	height: 100%;
+}
+
+ForumWarning {
+	align: center middle;
+	height: 100%;
+}
+
+ForumWarning > Horizontal {
+	height: auto;
+	width: 100%;
+	align: center middle;
+	margin: 1;
+}
+
+#subscribe {
+	width: 15;
+}
+
+.subscribed ForumWarning {
+	display: none;
+}
+
