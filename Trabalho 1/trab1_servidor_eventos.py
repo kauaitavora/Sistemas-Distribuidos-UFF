@@ -19,7 +19,6 @@ FORUNS = {
 
 
 class ForumServiceServicer(trab1_pb2_grpc.ForumServiceServicer):
-
     def __init__(self):
 
         # Estrutura:
@@ -43,7 +42,6 @@ class ForumServiceServicer(trab1_pb2_grpc.ForumServiceServicer):
         self.lock = Lock()
 
     def inscrever(self, request, context):
-
         id_forum = request.id_forum
         usuario = request.usuario
         id_usuario = usuario.id
@@ -109,9 +107,9 @@ class ForumServiceServicer(trab1_pb2_grpc.ForumServiceServicer):
             )
 
     def publicar(self, request, context):
-
         id_forum = request.id_forum
         id_usuario = request.id_usuario
+        nome_usuario = request.nome_usuario
         mensagem = request.mensagem.strip()
 
         # Verifica se o fórum existe.
@@ -157,7 +155,8 @@ class ForumServiceServicer(trab1_pb2_grpc.ForumServiceServicer):
             id_forum=id_forum,
             id_usuario=id_usuario,
             timestamp=timestamp,
-            mensagem=mensagem
+            mensagem=mensagem,
+            nome_usuario=nome_usuario
         )
 
         # Distribui o evento a todos os assinantes do fórum.
@@ -166,7 +165,7 @@ class ForumServiceServicer(trab1_pb2_grpc.ForumServiceServicer):
 
         print(
             f"[PUBLICAÇÃO] Mensagem {id_mensagem} "
-            f"publicada pelo usuário {id_usuario} em "
+            f"publicada por {nome_usuario} (ID {id_usuario}) em "
             f"{FORUNS[id_forum]} (ID {id_forum}) "
             f"para {len(filas_destino)} assinante(s)."
         )
