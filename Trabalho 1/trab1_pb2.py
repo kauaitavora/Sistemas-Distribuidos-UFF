@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0btrab1.proto\"\x1e\n\x0b\x43onfirmacao\x12\x0f\n\x07sucesso\x18\x01 \x01(\x08\"#\n\x07Usuario\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x0c\n\x04nome\x18\x02 \x01(\t\"C\n\x14SolicitacaoInscricao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x19\n\x07usuario\x18\x02 \x01(\x0b\x32\x08.Usuario\"O\n\x15SolicitacaoPublicacao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x12\n\nid_usuario\x18\x02 \x01(\x04\x12\x10\n\x08mensagem\x18\x03 \x01(\t\"l\n\nPublicacao\x12\x13\n\x0bid_mensagem\x18\x01 \x01(\x04\x12\x10\n\x08id_forum\x18\x02 \x01(\x04\x12\x12\n\nid_usuario\x18\x03 \x01(\x04\x12\x11\n\ttimestamp\x18\x04 \x01(\t\x12\x10\n\x08mensagem\x18\x05 \x01(\t2s\n\x0c\x46orumService\x12\x31\n\tinscrever\x12\x15.SolicitacaoInscricao\x1a\x0b.Publicacao0\x01\x12\x30\n\x08publicar\x12\x16.SolicitacaoPublicacao\x1a\x0c.Confirmacaob\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0btrab1.proto\"\x1e\n\x0b\x43onfirmacao\x12\x0f\n\x07sucesso\x18\x01 \x01(\x08\"#\n\x07Usuario\x12\n\n\x02id\x18\x01 \x01(\x04\x12\x0c\n\x04nome\x18\x02 \x01(\t\"C\n\x14SolicitacaoInscricao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x19\n\x07usuario\x18\x02 \x01(\x0b\x32\x08.Usuario\"e\n\x15SolicitacaoPublicacao\x12\x10\n\x08id_forum\x18\x01 \x01(\x04\x12\x12\n\nid_usuario\x18\x02 \x01(\x04\x12\x10\n\x08mensagem\x18\x03 \x01(\t\x12\x14\n\x0cnome_usuario\x18\x04 \x01(\t\"\x82\x01\n\nPublicacao\x12\x13\n\x0bid_mensagem\x18\x01 \x01(\x04\x12\x10\n\x08id_forum\x18\x02 \x01(\x04\x12\x12\n\nid_usuario\x18\x03 \x01(\x04\x12\x11\n\ttimestamp\x18\x04 \x01(\t\x12\x10\n\x08mensagem\x18\x05 \x01(\t\x12\x14\n\x0cnome_usuario\x18\x06 \x01(\t2s\n\x0c\x46orumService\x12\x31\n\tinscrever\x12\x15.SolicitacaoInscricao\x1a\x0b.Publicacao0\x01\x12\x30\n\x08publicar\x12\x16.SolicitacaoPublicacao\x1a\x0c.Confirmacaob\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -38,9 +38,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_SOLICITACAOINSCRICAO']._serialized_start=84
   _globals['_SOLICITACAOINSCRICAO']._serialized_end=151
   _globals['_SOLICITACAOPUBLICACAO']._serialized_start=153
-  _globals['_SOLICITACAOPUBLICACAO']._serialized_end=232
-  _globals['_PUBLICACAO']._serialized_start=234
-  _globals['_PUBLICACAO']._serialized_end=342
-  _globals['_FORUMSERVICE']._serialized_start=344
-  _globals['_FORUMSERVICE']._serialized_end=459
+  _globals['_SOLICITACAOPUBLICACAO']._serialized_end=254
+  _globals['_PUBLICACAO']._serialized_start=257
+  _globals['_PUBLICACAO']._serialized_end=387
+  _globals['_FORUMSERVICE']._serialized_start=389
+  _globals['_FORUMSERVICE']._serialized_end=504
 # @@protoc_insertion_point(module_scope)

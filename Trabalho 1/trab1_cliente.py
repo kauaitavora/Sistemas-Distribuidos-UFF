@@ -55,7 +55,8 @@ class Forum(VerticalGroup):
         solicitacao = trab1_pb2.SolicitacaoPublicacao(
             id_forum = self.id_forum,
             id_usuario = self.usuario.id,
-            mensagem = message
+            mensagem = message,
+            nome_usuario = self.usuario.nome
         )
 
         try:
@@ -87,7 +88,7 @@ class Forum(VerticalGroup):
 
     def exibir_publicacao(self, publicacao):
         self.query_one(RichLog).write(
-            f"{publicacao.id_usuario}: "
+            f"{publicacao.nome_usuario}: "
             f"{publicacao.mensagem}"
         )
 

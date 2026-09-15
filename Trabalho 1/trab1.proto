@@ -18,6 +18,7 @@ message SolicitacaoPublicacao {
     uint64 id_forum = 1;
     uint64 id_usuario = 2;
     string mensagem = 3;
+    string nome_usuario = 4;
 }
 
 message Publicacao {
@@ -26,6 +27,7 @@ message Publicacao {
     uint64 id_usuario = 3;
     string timestamp = 4;
     string mensagem = 5;
+    string nome_usuario = 6;
 }
 
 service ForumService {
