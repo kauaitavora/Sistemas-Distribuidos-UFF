@@ -1,5 +1,5 @@
 #!/bin/bash
-# Bateria de execuções do K-Means (baseado no script_cluster do curso).
+# Bateria de execuções do K-Means.
 # Roda cada configuração REPS vezes e grava a linha RESULTADO de cada execução num CSV.
 #
 # Uso:  ./rodar_bateria.sh <seq|mpi|spark> <nome dos dados> ["lista de p"]
@@ -12,7 +12,7 @@
 #   EXTRA="..."       argumentos extras repassados ao programa Python
 #   MEM_SPARK=8g      memória da JVM no Spark local (o cache do RDD fica nela)
 
-set -u                                   # erro se usar variável não definida (pega erro de digitação)
+set -u # erro se usar variável não definida (pega erro de digitação)
 
 IMPL=$1
 NOME=$2
@@ -27,11 +27,11 @@ NUCLEOS=16
 THREADS_HW=32
 
 if [ "${SMOKE:-0}" = 1 ]; then LISTA_P="1 2"; REPS=1; fi
-if [ "$IMPL" = seq ]; then LISTA_P="1"; fi        # o sequencial só existe com 1 processo
+if [ "$IMPL" = seq ]; then LISTA_P="1"; fi # o sequencial só existe com 1 processo
 
 # 1 processo = 1 núcleo: BLAS sem threads extras (vale para MPI, seq e o driver do Spark)
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
-export PYSPARK_PYTHON=$(which python)            # executores do Spark usam o Python do venv
+export PYSPARK_PYTHON=$(which python) # executores do Spark usam o Python do venv
 
 mkdir -p resultados
 CSV=resultados/${IMPL}_${NOME}_${VARIANTE}.csv
@@ -64,14 +64,14 @@ for rep in $(seq 1 "$REPS"); do
     { echo "=== $(date '+%F %T') rep=$rep p=$p oversub=$OVERSUB | carga: $(cut -d' ' -f1-3 /proc/loadavg)"
       echo "${CMD[*]}"; } >> "$LOG"
 
-    SAIDA=$("${CMD[@]}" 2>&1)            # roda e guarda toda a saída (inclusive erros)
+    SAIDA=$("${CMD[@]}" 2>&1 < /dev/null) # roda e guarda toda a saída (inclusive erros)
     STATUS=$?
     echo "$SAIDA" >> "$LOG"
 
     LINHA=$(echo "$SAIDA" | grep '^RESULTADO,' | tail -1)
     if [ $STATUS -ne 0 ] || [ -z "$LINHA" ]; then
       echo "FALHOU rep=$rep p=$p (status $STATUS): veja $LOG"
-      continue                           # segue para a próxima configuração
+      continue # segue para a próxima configuração
     fi
 
     # Tira o prefixo "RESULTADO," e acrescenta rep, oversub e variante
