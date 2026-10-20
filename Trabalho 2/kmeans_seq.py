@@ -67,6 +67,8 @@ def main():
     from sklearn.metrics import adjusted_rand_score
     y = np.load(f"{a.pasta}/y_{a.nome}.npy")
     print(f"ARI vs. tema verdadeiro: {adjusted_rand_score(y, rotulos):.3f}  (0 = aleatório, 1 = perfeito)")
+    # mesma linha das versões MPI e Spark (p=1; sem t_dist, t_comp e t_comm), lida pelo rodar_bateria.sh
+    print(f"RESULTADO,seq,1,{N},{d},{k},{a.iter},,{t:.6f},,,{inercias[-1]:.6f}")
 
 if __name__ == "__main__":
     main()
