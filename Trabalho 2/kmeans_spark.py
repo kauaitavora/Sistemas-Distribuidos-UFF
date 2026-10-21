@@ -29,7 +29,7 @@ def divisao(N, p):
 
 def atribui(X, C, xx):
     """Idêntica ao kmeans_seq.py, mas aplicada só à fatia local."""
-    cc = np.einsum("ij,ij->i", C, C)
+    cc = np.sum(C * C, axis=1) # ||c||² de cada centroide: C é pequeno (k x d), então a legibilidade vale mais
     D = cc - 2.0 * (X @ C.T)
     rotulos = np.argmin(D, axis=1)
     return rotulos, D.min(axis=1) + xx
@@ -55,7 +55,7 @@ def distribui(sc, caminho, P, usa_cache=True):
         # Roda NO EXECUTOR: mapeia o arquivo e copia para a memória só as linhas do bloco i
         Xm = np.load(caminho, mmap_mode="r")
         Xb = np.array(Xm[inicios[i]:inicios[i] + linhas[i]], dtype=np.float64)
-        return Xb, np.einsum("ij,ij->i", Xb, Xb) # guarda também ||x||², que não muda entre iterações
+        return Xb, np.einsum("ij,ij->i", Xb, Xb) # guarda também ||x||², que não muda entre iterações (einsum: sem cópia de Xb)
 
     t0 = time.perf_counter()
     # P elementos (0..P-1) em P partições: cada partição recebe exatamente 1 índice -> 1 bloco

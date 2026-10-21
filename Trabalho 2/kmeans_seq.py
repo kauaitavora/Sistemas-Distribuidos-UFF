@@ -18,7 +18,7 @@ def parse_args():
 
 def atribui(X, C, xx):
     """Para cada linha de X, o índice do centroide mais próximo e a distância² até ele."""
-    cc = np.einsum("ij,ij->i", C, C) # ||c||² de cada centroide (vetor de tamanho k)
+    cc = np.sum(C * C, axis=1) # ||c||² de cada centroide (vetor de tamanho k)
     D = cc - 2.0 * (X @ C.T) # N x k: ||x-c||² SEM o termo ||x||² (não muda o argmin)
     rotulos = np.argmin(D, axis=1) # centroide mais próximo de cada ponto
     dmin = D.min(axis=1) + xx # recoloca ||x||² para obter a distância² verdadeira
@@ -35,7 +35,8 @@ def atualiza(X, rotulos, C, k):
     return C_novo
 
 def kmeans(X, C0, iters):
-    xx = np.einsum("ij,ij->i", X, X) # ||x||² de cada ponto: calculado uma vez, reaproveitado
+    xx = np.einsum("ij,ij->i", X, X) # ||x||² de cada ponto: calculado uma vez, reaproveitado.
+                                     # einsum e não np.sum(X*X): não cria uma cópia temporária N x d de X
     C = C0.copy() # nunca alteramos o C0 original
     inercias = []
     for _ in range(iters):
@@ -63,10 +64,10 @@ def main():
     print(f"tamanhos dos clusters: min={np.bincount(rotulos, minlength=k).min()} "
           f"max={np.bincount(rotulos, minlength=k).max()}")
 
-    # Qualidade do agrupamento vs. centroide verdadeiro (só validação, fora do tempo)
+    # Qualidade do agrupamento vs. cluster verdadeiro (y) (só validação, fora do tempo)
     from sklearn.metrics import adjusted_rand_score
     y = np.load(f"{a.pasta}/y_{a.nome}.npy")
-    print(f"ARI vs. tema verdadeiro: {adjusted_rand_score(y, rotulos):.3f}  (0 = aleatório, 1 = perfeito)")
+    print(f"ARI vs. cluster verdadeiro: {adjusted_rand_score(y, rotulos):.3f}  (0 = aleatório, 1 = perfeito)")
     # mesma linha das versões MPI e Spark (p=1; sem t_dist, t_comp e t_comm), lida pelo rodar_bateria.sh
     print(f"RESULTADO,seq,1,{N},{d},{k},{a.iter},,{t:.6f},,,{inercias[-1]:.6f}")
 

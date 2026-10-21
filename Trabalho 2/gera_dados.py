@@ -30,7 +30,7 @@ def gera_dados_sinteticos(N, d, k, seed):
     
     ruido = 0.5 * rng.random((N, d)) ** 4 # ruído não negativo
     X = centroides[y] + ruido # ponto de dados = centro do cluster + ruído
-    X[:] /= np.linalg.norm(X, axis=1, keepdims=True) # norma 1, igual ao real
+    X[:] /= np.linalg.norm(X, axis=1, keepdims=True) # norma 1: distância euclidiana equivale ao cosseno
 
     return X, y
 
