@@ -89,7 +89,7 @@ def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="add
             comm.Allreduce(cont, cont_g, op=MPI.SUM) # k: soma das contagens -> TODOS recebem
             tc = MPI.Wtime()
             ok = cont_g > 0 # mesma regra do cluster vazio do sequencial
-            C[ok] = somas_g[ok] / cont_g[ok, None] # cada processo calcula os MESMOS centróides
+            C[ok] = somas_g[ok] / cont_g[ok, None] # cada processo calcula os MESMOS centroides
             t_comp += (tb - ta) + (MPI.Wtime() - tc)
             t_comm += tc - tb
         else:
@@ -101,7 +101,7 @@ def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="add
                 ok = cont_g > 0
                 C[ok] = somas_g[ok] / cont_g[ok, None] # só a raiz calcula
             td = MPI.Wtime()
-            comm.Bcast(C, root=0) # k x d: os outros esperam a raiz e recebem os novos centróides
+            comm.Bcast(C, root=0) # k x d: os outros esperam a raiz e recebem os novos centroides
             te = MPI.Wtime()
             t_comp += (tb - ta) + (td - tc)
             t_comm += (tc - tb) + (te - td)

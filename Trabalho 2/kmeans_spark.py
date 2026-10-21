@@ -89,7 +89,7 @@ def kmeans_spark(sc, rdd, C0, iters, modo_somas="add_at"):
         bc.unpersist() # descarta a cópia antiga de C nos executores
         inercias.append(ine)
 
-        C = C.copy() # novo array para os novos centróides
+        C = C.copy() # novo array para os novos centroides
         ok = cont > 0 # mesma regra do cluster vazio
         C[ok] = somas[ok] / cont[ok, None]
     t_total = time.perf_counter() - t0

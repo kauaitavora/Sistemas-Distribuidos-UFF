@@ -1,5 +1,5 @@
 # Gera um conjunto de pontos de dados sintético X (N pontos x d dimensões)
-# e os centróides iniciais C0 (k centróides x d dimensões).
+# e os centroides iniciais C0 (k centroides x d dimensões).
 # As três implementações (sequencial, MPI e Spark) leem os mesmos arquivos.
 
 import argparse, json, os, time
@@ -8,7 +8,7 @@ import numpy as np
 def parse_args():
     p = argparse.ArgumentParser(description=
         "Gera um conjunto de pontos de dados sintético X (N pontos x d dimensões)"
-        "e os centróides iniciais C0 (k centróides x d dimensões)."
+        "e os centroides iniciais C0 (k centroides x d dimensões)."
     )
 
     p.add_argument("--N", type=int, default=400_000, help="nº de pontos")
@@ -28,14 +28,14 @@ def gera_dados_sinteticos(N, d, k, seed):
     # Lista aleatória de índices: indica a qual cluster pertence cada ponto.
     y = rng.integers(0, k, N)
     
-    ruido = 0.5 * rng.random((N, d)) ** 4 # ruído não negativo, mais fraco que o tema
+    ruido = 0.5 * rng.random((N, d)) ** 4 # ruído não negativo
     X = centroides[y] + ruido # ponto de dados = centro do cluster + ruído
     X[:] /= np.linalg.norm(X, axis=1, keepdims=True) # norma 1, igual ao real
 
     return X, y
 
 def centroides_iniciais(X, k, seed):
-    # Escolhe k pontos distintos ao acaso como centróides iniciais.
+    # Escolhe k pontos distintos ao acaso como centroides iniciais.
     # seed+1: fluxo aleatório independente do usado para gerar os dados.
     rng = np.random.default_rng(seed + 1)
     idx = np.sort(rng.choice(X.shape[0], size=k, replace=False))
