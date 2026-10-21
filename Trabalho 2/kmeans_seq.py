@@ -20,12 +20,12 @@ def atribui(X, C, xx):
     """Para cada linha de X, o índice do centróide mais próximo e a distância² até ele."""
     cc = np.einsum("ij,ij->i", C, C) # ||c||² de cada centróide (vetor de tamanho k)
     D = cc - 2.0 * (X @ C.T) # N x k: ||x-c||² SEM o termo ||x||² (não muda o argmin)
-    rotulos = np.argmin(D, axis=1) # centróide mais próximo de cada documento
+    rotulos = np.argmin(D, axis=1) # centróide mais próximo de cada ponto
     dmin = D.min(axis=1) + xx # recoloca ||x||² para obter a distância² verdadeira
     return rotulos, dmin
 
 def atualiza(X, rotulos, C, k):
-    """Novos centróides = soma dos documentos de cada cluster ÷ quantidade."""
+    """Novos centróides = soma dos pontos de cada cluster ÷ quantidade."""
     somas = np.zeros((k, X.shape[1])) # k x d
     np.add.at(somas, rotulos, X) # soma cada linha de X na linha do seu cluster
     contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # k
@@ -35,7 +35,7 @@ def atualiza(X, rotulos, C, k):
     return C_novo
 
 def kmeans(X, C0, iters):
-    xx = np.einsum("ij,ij->i", X, X) # ||x||² de cada documento: calculado uma vez, reaproveitado
+    xx = np.einsum("ij,ij->i", X, X) # ||x||² de cada ponto: calculado uma vez, reaproveitado
     C = C0.copy() # nunca alteramos o C0 original
     inercias = []
     for _ in range(iters):

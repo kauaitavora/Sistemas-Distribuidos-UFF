@@ -12,7 +12,7 @@ def parse_args():
     )
 
     p.add_argument("--N", type=int, default=400_000, help="nº de pontos")
-    p.add_argument("--d", type=int, default=256, help="dimensão de cada vetor-documento")
+    p.add_argument("--d", type=int, default=256, help="número de dimensões de cada ponto")
     p.add_argument("--k", type=int, default=64, help="nº de clusters")
     p.add_argument("--seed", type=int, default=42, help="semente para geração de números pseudoaleatórios")
     p.add_argument("--nome", default=None, help="sufixo dos arquivos (padrão: sint_<N>)")
