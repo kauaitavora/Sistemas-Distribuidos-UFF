@@ -17,30 +17,30 @@ def parse_args():
     return p.parse_args()
 
 def atribui(X, C, xx):
-    """Para cada linha de X, o índice do centróide mais próximo e a distância² até ele."""
-    cc = np.einsum("ij,ij->i", C, C) # ||c||² de cada centróide (vetor de tamanho k)
+    """Para cada linha de X, o índice do centroide mais próximo e a distância² até ele."""
+    cc = np.einsum("ij,ij->i", C, C) # ||c||² de cada centroide (vetor de tamanho k)
     D = cc - 2.0 * (X @ C.T) # N x k: ||x-c||² SEM o termo ||x||² (não muda o argmin)
-    rotulos = np.argmin(D, axis=1) # centróide mais próximo de cada documento
+    rotulos = np.argmin(D, axis=1) # centroide mais próximo de cada ponto
     dmin = D.min(axis=1) + xx # recoloca ||x||² para obter a distância² verdadeira
     return rotulos, dmin
 
 def atualiza(X, rotulos, C, k):
-    """Novos centróides = soma dos documentos de cada cluster ÷ quantidade."""
+    """Novos centroides = soma dos pontos de cada cluster ÷ quantidade."""
     somas = np.zeros((k, X.shape[1])) # k x d
     np.add.at(somas, rotulos, X) # soma cada linha de X na linha do seu cluster
     contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # k
     C_novo = C.copy()
-    ok = contagens > 0 # regra do cluster vazio: mantém o centróide antigo
+    ok = contagens > 0 # regra do cluster vazio: mantém o centroide antigo
     C_novo[ok] = somas[ok] / contagens[ok, None]
     return C_novo
 
 def kmeans(X, C0, iters):
-    xx = np.einsum("ij,ij->i", X, X) # ||x||² de cada documento: calculado uma vez, reaproveitado
+    xx = np.einsum("ij,ij->i", X, X) # ||x||² de cada ponto: calculado uma vez, reaproveitado
     C = C0.copy() # nunca alteramos o C0 original
     inercias = []
     for _ in range(iters):
         rotulos, dmin = atribui(X, C, xx)
-        inercias.append(dmin.sum()) # inércia = soma das distâncias² (com os centróides ANTES de atualizar)
+        inercias.append(dmin.sum()) # inércia = soma das distâncias² (com os centroides ANTES de atualizar)
         C = atualiza(X, rotulos, C, C.shape[0])
     return C, rotulos, inercias
 
@@ -63,10 +63,12 @@ def main():
     print(f"tamanhos dos clusters: min={np.bincount(rotulos, minlength=k).min()} "
           f"max={np.bincount(rotulos, minlength=k).max()}")
 
-    # Qualidade do agrupamento vs. tema verdadeiro (só validação, fora do tempo)
+    # Qualidade do agrupamento vs. centroide verdadeiro (só validação, fora do tempo)
     from sklearn.metrics import adjusted_rand_score
     y = np.load(f"{a.pasta}/y_{a.nome}.npy")
     print(f"ARI vs. tema verdadeiro: {adjusted_rand_score(y, rotulos):.3f}  (0 = aleatório, 1 = perfeito)")
+    # mesma linha das versões MPI e Spark (p=1; sem t_dist, t_comp e t_comm), lida pelo rodar_bateria.sh
+    print(f"RESULTADO,seq,1,{N},{d},{k},{a.iter},,{t:.6f},,,{inercias[-1]:.6f}")
 
 if __name__ == "__main__":
     main()

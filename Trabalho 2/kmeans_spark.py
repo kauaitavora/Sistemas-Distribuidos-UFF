@@ -14,6 +14,10 @@ def parse_args():
     p.add_argument("--iter", type=int, default=20)
     p.add_argument("--particoes", type=int, default=0,
                    help="nº de partições (0 = nº de núcleos do Spark, defaultParallelism)")
+    # Alteração Spark (b): sem cache, cada iteração refaz a leitura dos blocos e o cálculo de ||x||²
+    p.add_argument("--sem-cache", action="store_true", help="não chama cache() no RDD dos dados")
+    p.add_argument("--somas", choices=["add_at", "onehot"], default="add_at",
+                   help="mesma troca da alteração MPI (c), para comparar o efeito nos dois modelos")
     return p.parse_args()
 
 def divisao(N, p):
@@ -30,14 +34,20 @@ def atribui(X, C, xx):
     rotulos = np.argmin(D, axis=1)
     return rotulos, D.min(axis=1) + xx
 
-def somas_locais(X_local, rotulos, k):
+def somas_locais(X_local, rotulos, k, modo="add_at"):
     """Metade do 'atualiza' do sequencial: só soma e conta. A divisão fica para DEPOIS do Allreduce."""
-    somas = np.zeros((k, X_local.shape[1]))
-    np.add.at(somas, rotulos, X_local)
+    if modo == "add_at":
+        somas = np.zeros((k, X_local.shape[1]))
+        np.add.at(somas, rotulos, X_local) # soma linha a linha: laço interno do numpy, sem BLAS
+    else:
+        # (M.T @ X)[j] = soma dos pontos do cluster j, com M one-hot (N_local x k): BLAS
+        M = np.zeros((X_local.shape[0], k))
+        M[np.arange(X_local.shape[0]), rotulos] = 1.0
+        somas = M.T @ X_local
     contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # float64: mesmo tipo do buffer MPI.DOUBLE
     return somas, contagens
 
-def distribui(sc, caminho, P):
+def distribui(sc, caminho, P, usa_cache=True):
     N, d = np.load(caminho, mmap_mode="r").shape # lê só o cabeçalho do .npy (N e d)
     linhas, inicios = divisao(N, P) # mesma divisão por linhas do MPI
 
@@ -49,12 +59,14 @@ def distribui(sc, caminho, P):
 
     t0 = time.perf_counter()
     # P elementos (0..P-1) em P partições: cada partição recebe exatamente 1 índice -> 1 bloco
-    rdd = sc.parallelize(range(P), P).map(carrega_bloco).cache()
-    rdd.count() # AÇÃO: força a carga e preenche o cache
+    rdd = sc.parallelize(range(P), P).map(carrega_bloco)
+    if usa_cache:
+        rdd = rdd.cache() # guarda os blocos na memória: as 20 iterações reaproveitam
+    rdd.count() # AÇÃO: força a carga (e, com cache, preenche o cache)
     t_dist = time.perf_counter() - t0
     return rdd, N, d, t_dist
 
-def kmeans_spark(sc, rdd, C0, iters):
+def kmeans_spark(sc, rdd, C0, iters, modo_somas="add_at"):
     k, d = C0.shape
     C = C0.copy()
     zero = (np.zeros((k, d)), np.zeros(k), 0.0) # (somas, contagens, inércia)
@@ -69,7 +81,7 @@ def kmeans_spark(sc, rdd, C0, iters):
             Cb = bc.value
             for Xb, xxb in blocos: # há exatamente 1 bloco por partição
                 rot, dmin = atribui(Xb, Cb, xxb)
-                somas, cont = somas_locais(Xb, rot, k)
+                somas, cont = somas_locais(Xb, rot, k, modo_somas)
                 yield somas, cont, dmin.sum()
 
         # treeAggregate: combina os resultados parciais em árvore até o driver
@@ -77,7 +89,7 @@ def kmeans_spark(sc, rdd, C0, iters):
         bc.unpersist() # descarta a cópia antiga de C nos executores
         inercias.append(ine)
 
-        C = C.copy() # novo array para os novos centróides
+        C = C.copy() # novo array para os novos centroides
         ok = cont > 0 # mesma regra do cluster vazio
         C[ok] = somas[ok] / cont[ok, None]
     t_total = time.perf_counter() - t0
@@ -100,15 +112,15 @@ def main():
     threads = sc.parallelize(range(P), P).map(
         lambda _: os.environ.get("OPENBLAS_NUM_THREADS")).distinct().collect()
 
-    rdd, N, d, t_dist = distribui(sc, caminho, P)
-    C, inercias, t_total = kmeans_spark(sc, rdd, C0, a.iter)
+    rdd, N, d, t_dist = distribui(sc, caminho, P, usa_cache=not a.sem_cache)
+    C, inercias, t_total = kmeans_spark(sc, rdd, C0, a.iter, a.somas)
 
     # ---- fora do tempo: validação ----
     k = C0.shape[0]
     monotona = all(b <= x * (1 + 1e-12) for x, b in zip(inercias, inercias[1:]))
     np.save(f"{a.pasta}/C_spark_{a.nome}_P{P}.npy", C)
     C_seq = np.load(f"{a.pasta}/C_seq_{a.nome}.npy")
-    print(f"master={sc.master} partições={P} | OPENBLAS_NUM_THREADS nos executores={threads}")
+    print(f"master={sc.master} partições={P} cache={not a.sem_cache} somas={a.somas} | OPENBLAS_NUM_THREADS nos executores={threads}")
     print(f"N={N} d={d} k={k} iter={a.iter} | dist={t_dist:.3f}s total={t_total:.3f}s | "
           f"inércia final={inercias[-1]:.6f} | não crescente: {monotona}")
     print(f"max |C_spark - C_seq| = {np.abs(C - C_seq).max():.2e}")
