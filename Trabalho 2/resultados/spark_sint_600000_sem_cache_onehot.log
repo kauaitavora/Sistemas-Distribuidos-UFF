@@ -1,0 +1,324 @@
+=== 2026-10-21 23:26:10 rep=1 p=4 oversub=0 | carga: 0.12 13.84 17.64
+spark-submit --master local[4] --driver-memory 8g --conf spark.default.parallelism=4 kmeans_spark.py --nome sint_600000 --particoes 4 --sem-cache --somas onehot
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:26:11 WARN Utils: Your hostname, n-11, resolves to a loopback address: 127.0.1.1; using 10.0.1.11 instead (on interface enp9s0)
+26/10/21 23:26:11 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:26:13 INFO SparkContext: Running Spark version 4.0.1
+26/10/21 23:26:13 INFO SparkContext: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:26:13 INFO SparkContext: Java version 17.0.20.1
+26/10/21 23:26:13 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/21 23:26:13 INFO ResourceUtils: ==============================================================
+26/10/21 23:26:13 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/10/21 23:26:13 INFO ResourceUtils: ==============================================================
+26/10/21 23:26:13 INFO SparkContext: Submitted application: kmeans_spark_sint_600000
+26/10/21 23:26:13 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/10/21 23:26:13 INFO ResourceProfile: Limiting resource is cpu
+26/10/21 23:26:13 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/10/21 23:26:13 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:26:13 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:26:13 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:26:13 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:26:13 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:26:14 INFO Utils: Successfully started service 'sparkDriver' on port 46555.
+26/10/21 23:26:14 INFO SparkEnv: Registering MapOutputTracker
+26/10/21 23:26:14 INFO SparkEnv: Registering BlockManagerMaster
+26/10/21 23:26:14 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/10/21 23:26:14 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/10/21 23:26:14 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/10/21 23:26:14 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-893a8a0a-1c5a-45a3-b179-48c1bc28e067
+26/10/21 23:26:14 INFO SparkEnv: Registering OutputCommitCoordinator
+26/10/21 23:26:14 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/10/21 23:26:14 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/10/21 23:26:14 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:26:14 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:26:14 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:26:14 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:26:14 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:26:14 INFO Executor: Starting executor ID driver on host 10.0.1.11
+26/10/21 23:26:14 INFO Executor: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:26:14 INFO Executor: Java version 17.0.20.1
+26/10/21 23:26:14 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/10/21 23:26:14 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@7039f35a for default.
+26/10/21 23:26:14 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 42025.
+26/10/21 23:26:14 INFO NettyBlockTransferService: Server created on 10.0.1.11:42025
+26/10/21 23:26:14 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/10/21 23:26:14 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.0.1.11, 42025, None)
+26/10/21 23:26:14 INFO BlockManagerMasterEndpoint: Registering block manager 10.0.1.11:42025 with 4.6 GiB RAM, BlockManagerId(driver, 10.0.1.11, 42025, None)
+26/10/21 23:26:14 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.0.1.11, 42025, None)
+26/10/21 23:26:14 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.0.1.11, 42025, None)
+master=local[4] partições=4 cache=False somas=onehot | OPENBLAS_NUM_THREADS nos executores=['1']
+N=600000 d=256 k=64 iter=20 | dist=0.483s total=20.656s | inércia final=88192.307179 | não crescente: True
+max |C_spark - C_seq| = 1.39e-15
+RESULTADO,spark,4,600000,256,64,20,0.483174,20.655676,,,88192.307179
+=== 2026-10-21 23:26:40 rep=1 p=16 oversub=0 | carga: 1.33 12.82 17.17
+spark-submit --master local[16] --driver-memory 8g --conf spark.default.parallelism=16 kmeans_spark.py --nome sint_600000 --particoes 16 --sem-cache --somas onehot
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:26:41 WARN Utils: Your hostname, n-11, resolves to a loopback address: 127.0.1.1; using 10.0.1.11 instead (on interface enp9s0)
+26/10/21 23:26:41 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:26:43 INFO SparkContext: Running Spark version 4.0.1
+26/10/21 23:26:43 INFO SparkContext: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:26:43 INFO SparkContext: Java version 17.0.20.1
+26/10/21 23:26:43 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/21 23:26:43 INFO ResourceUtils: ==============================================================
+26/10/21 23:26:43 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/10/21 23:26:43 INFO ResourceUtils: ==============================================================
+26/10/21 23:26:43 INFO SparkContext: Submitted application: kmeans_spark_sint_600000
+26/10/21 23:26:43 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/10/21 23:26:43 INFO ResourceProfile: Limiting resource is cpu
+26/10/21 23:26:43 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/10/21 23:26:43 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:26:43 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:26:43 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:26:43 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:26:43 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:26:43 INFO Utils: Successfully started service 'sparkDriver' on port 38291.
+26/10/21 23:26:43 INFO SparkEnv: Registering MapOutputTracker
+26/10/21 23:26:43 INFO SparkEnv: Registering BlockManagerMaster
+26/10/21 23:26:43 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/10/21 23:26:43 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/10/21 23:26:43 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/10/21 23:26:43 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-2c7d177a-7c62-46f7-ae5e-2cb1e3b33b6f
+26/10/21 23:26:43 INFO SparkEnv: Registering OutputCommitCoordinator
+26/10/21 23:26:44 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/10/21 23:26:44 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/10/21 23:26:44 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:26:44 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:26:44 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:26:44 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:26:44 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:26:44 INFO Executor: Starting executor ID driver on host 10.0.1.11
+26/10/21 23:26:44 INFO Executor: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:26:44 INFO Executor: Java version 17.0.20.1
+26/10/21 23:26:44 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/10/21 23:26:44 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@1772396f for default.
+26/10/21 23:26:44 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 44447.
+26/10/21 23:26:44 INFO NettyBlockTransferService: Server created on 10.0.1.11:44447
+26/10/21 23:26:44 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/10/21 23:26:44 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.0.1.11, 44447, None)
+26/10/21 23:26:44 INFO BlockManagerMasterEndpoint: Registering block manager 10.0.1.11:44447 with 4.6 GiB RAM, BlockManagerId(driver, 10.0.1.11, 44447, None)
+26/10/21 23:26:44 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.0.1.11, 44447, None)
+26/10/21 23:26:44 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.0.1.11, 44447, None)
+master=local[16] partições=16 cache=False somas=onehot | OPENBLAS_NUM_THREADS nos executores=['1']
+N=600000 d=256 k=64 iter=20 | dist=0.421s total=15.964s | inércia final=88192.307179 | não crescente: True
+max |C_spark - C_seq| = 1.44e-15
+RESULTADO,spark,16,600000,256,64,20,0.421360,15.963896,,,88192.307179
+=== 2026-10-21 23:27:05 rep=2 p=4 oversub=0 | carga: 3.10 12.32 16.89
+spark-submit --master local[4] --driver-memory 8g --conf spark.default.parallelism=4 kmeans_spark.py --nome sint_600000 --particoes 4 --sem-cache --somas onehot
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:27:06 WARN Utils: Your hostname, n-11, resolves to a loopback address: 127.0.1.1; using 10.0.1.11 instead (on interface enp9s0)
+26/10/21 23:27:06 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:27:08 INFO SparkContext: Running Spark version 4.0.1
+26/10/21 23:27:08 INFO SparkContext: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:27:08 INFO SparkContext: Java version 17.0.20.1
+26/10/21 23:27:08 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/21 23:27:08 INFO ResourceUtils: ==============================================================
+26/10/21 23:27:08 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/10/21 23:27:08 INFO ResourceUtils: ==============================================================
+26/10/21 23:27:08 INFO SparkContext: Submitted application: kmeans_spark_sint_600000
+26/10/21 23:27:08 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/10/21 23:27:08 INFO ResourceProfile: Limiting resource is cpu
+26/10/21 23:27:08 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/10/21 23:27:08 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:27:08 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:27:08 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:27:08 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:27:08 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:27:08 INFO Utils: Successfully started service 'sparkDriver' on port 33329.
+26/10/21 23:27:08 INFO SparkEnv: Registering MapOutputTracker
+26/10/21 23:27:08 INFO SparkEnv: Registering BlockManagerMaster
+26/10/21 23:27:08 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/10/21 23:27:08 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/10/21 23:27:08 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/10/21 23:27:08 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-2f4e5e45-a1d9-41b4-b099-355629624123
+26/10/21 23:27:09 INFO SparkEnv: Registering OutputCommitCoordinator
+26/10/21 23:27:09 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/10/21 23:27:09 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/10/21 23:27:09 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:27:09 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:27:09 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:27:09 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:27:09 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:27:09 INFO Executor: Starting executor ID driver on host 10.0.1.11
+26/10/21 23:27:09 INFO Executor: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:27:09 INFO Executor: Java version 17.0.20.1
+26/10/21 23:27:09 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/10/21 23:27:09 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@22a81967 for default.
+26/10/21 23:27:09 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 43289.
+26/10/21 23:27:09 INFO NettyBlockTransferService: Server created on 10.0.1.11:43289
+26/10/21 23:27:09 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/10/21 23:27:09 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.0.1.11, 43289, None)
+26/10/21 23:27:09 INFO BlockManagerMasterEndpoint: Registering block manager 10.0.1.11:43289 with 4.6 GiB RAM, BlockManagerId(driver, 10.0.1.11, 43289, None)
+26/10/21 23:27:09 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.0.1.11, 43289, None)
+26/10/21 23:27:09 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.0.1.11, 43289, None)
+master=local[4] partições=4 cache=False somas=onehot | OPENBLAS_NUM_THREADS nos executores=['1']
+N=600000 d=256 k=64 iter=20 | dist=0.464s total=20.007s | inércia final=88192.307179 | não crescente: True
+max |C_spark - C_seq| = 1.39e-15
+RESULTADO,spark,4,600000,256,64,20,0.464182,20.006792,,,88192.307179
+=== 2026-10-21 23:27:34 rep=2 p=16 oversub=0 | carga: 3.29 11.62 16.54
+spark-submit --master local[16] --driver-memory 8g --conf spark.default.parallelism=16 kmeans_spark.py --nome sint_600000 --particoes 16 --sem-cache --somas onehot
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:27:35 WARN Utils: Your hostname, n-11, resolves to a loopback address: 127.0.1.1; using 10.0.1.11 instead (on interface enp9s0)
+26/10/21 23:27:35 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:27:37 INFO SparkContext: Running Spark version 4.0.1
+26/10/21 23:27:37 INFO SparkContext: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:27:37 INFO SparkContext: Java version 17.0.20.1
+26/10/21 23:27:37 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/21 23:27:37 INFO ResourceUtils: ==============================================================
+26/10/21 23:27:37 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/10/21 23:27:37 INFO ResourceUtils: ==============================================================
+26/10/21 23:27:37 INFO SparkContext: Submitted application: kmeans_spark_sint_600000
+26/10/21 23:27:37 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/10/21 23:27:37 INFO ResourceProfile: Limiting resource is cpu
+26/10/21 23:27:37 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/10/21 23:27:37 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:27:37 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:27:37 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:27:37 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:27:37 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:27:37 INFO Utils: Successfully started service 'sparkDriver' on port 34799.
+26/10/21 23:27:37 INFO SparkEnv: Registering MapOutputTracker
+26/10/21 23:27:37 INFO SparkEnv: Registering BlockManagerMaster
+26/10/21 23:27:37 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/10/21 23:27:37 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/10/21 23:27:37 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/10/21 23:27:38 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-71906cb9-dcd9-4956-9cd7-7ed04cb6a94b
+26/10/21 23:27:38 INFO SparkEnv: Registering OutputCommitCoordinator
+26/10/21 23:27:38 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/10/21 23:27:38 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/10/21 23:27:38 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:27:38 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:27:38 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:27:38 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:27:38 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:27:38 INFO Executor: Starting executor ID driver on host 10.0.1.11
+26/10/21 23:27:38 INFO Executor: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:27:38 INFO Executor: Java version 17.0.20.1
+26/10/21 23:27:38 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/10/21 23:27:38 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@52df12f7 for default.
+26/10/21 23:27:38 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 44051.
+26/10/21 23:27:38 INFO NettyBlockTransferService: Server created on 10.0.1.11:44051
+26/10/21 23:27:38 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/10/21 23:27:38 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.0.1.11, 44051, None)
+26/10/21 23:27:38 INFO BlockManagerMasterEndpoint: Registering block manager 10.0.1.11:44051 with 4.6 GiB RAM, BlockManagerId(driver, 10.0.1.11, 44051, None)
+26/10/21 23:27:38 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.0.1.11, 44051, None)
+26/10/21 23:27:38 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.0.1.11, 44051, None)
+master=local[16] partições=16 cache=False somas=onehot | OPENBLAS_NUM_THREADS nos executores=['1']
+N=600000 d=256 k=64 iter=20 | dist=0.430s total=15.871s | inércia final=88192.307179 | não crescente: True
+max |C_spark - C_seq| = 1.44e-15
+RESULTADO,spark,16,600000,256,64,20,0.429891,15.870622,,,88192.307179
+=== 2026-10-21 23:27:59 rep=3 p=4 oversub=0 | carga: 6.17 11.58 16.39
+spark-submit --master local[4] --driver-memory 8g --conf spark.default.parallelism=4 kmeans_spark.py --nome sint_600000 --particoes 4 --sem-cache --somas onehot
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:28:00 WARN Utils: Your hostname, n-11, resolves to a loopback address: 127.0.1.1; using 10.0.1.11 instead (on interface enp9s0)
+26/10/21 23:28:00 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:28:02 INFO SparkContext: Running Spark version 4.0.1
+26/10/21 23:28:02 INFO SparkContext: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:28:02 INFO SparkContext: Java version 17.0.20.1
+26/10/21 23:28:02 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/21 23:28:02 INFO ResourceUtils: ==============================================================
+26/10/21 23:28:02 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/10/21 23:28:02 INFO ResourceUtils: ==============================================================
+26/10/21 23:28:02 INFO SparkContext: Submitted application: kmeans_spark_sint_600000
+26/10/21 23:28:02 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/10/21 23:28:02 INFO ResourceProfile: Limiting resource is cpu
+26/10/21 23:28:02 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/10/21 23:28:02 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:28:02 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:28:02 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:28:02 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:28:02 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:28:02 INFO Utils: Successfully started service 'sparkDriver' on port 33439.
+26/10/21 23:28:02 INFO SparkEnv: Registering MapOutputTracker
+26/10/21 23:28:02 INFO SparkEnv: Registering BlockManagerMaster
+26/10/21 23:28:02 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/10/21 23:28:02 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/10/21 23:28:02 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/10/21 23:28:02 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-2b7e945e-4ae4-4ec7-8fd7-00969f39b9cb
+26/10/21 23:28:02 INFO SparkEnv: Registering OutputCommitCoordinator
+26/10/21 23:28:02 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/10/21 23:28:03 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/10/21 23:28:03 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:28:03 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:28:03 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:28:03 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:28:03 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:28:03 INFO Executor: Starting executor ID driver on host 10.0.1.11
+26/10/21 23:28:03 INFO Executor: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:28:03 INFO Executor: Java version 17.0.20.1
+26/10/21 23:28:03 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/10/21 23:28:03 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@1dfdd57e for default.
+26/10/21 23:28:03 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 32941.
+26/10/21 23:28:03 INFO NettyBlockTransferService: Server created on 10.0.1.11:32941
+26/10/21 23:28:03 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/10/21 23:28:03 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.0.1.11, 32941, None)
+26/10/21 23:28:03 INFO BlockManagerMasterEndpoint: Registering block manager 10.0.1.11:32941 with 4.6 GiB RAM, BlockManagerId(driver, 10.0.1.11, 32941, None)
+26/10/21 23:28:03 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.0.1.11, 32941, None)
+26/10/21 23:28:03 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.0.1.11, 32941, None)
+master=local[4] partições=4 cache=False somas=onehot | OPENBLAS_NUM_THREADS nos executores=['1']
+N=600000 d=256 k=64 iter=20 | dist=0.483s total=20.362s | inércia final=88192.307179 | não crescente: True
+max |C_spark - C_seq| = 1.39e-15
+RESULTADO,spark,4,600000,256,64,20,0.482563,20.361997,,,88192.307179
+=== 2026-10-21 23:28:28 rep=3 p=16 oversub=0 | carga: 5.24 10.84 15.99
+spark-submit --master local[16] --driver-memory 8g --conf spark.default.parallelism=16 kmeans_spark.py --nome sint_600000 --particoes 16 --sem-cache --somas onehot
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:28:29 WARN Utils: Your hostname, n-11, resolves to a loopback address: 127.0.1.1; using 10.0.1.11 instead (on interface enp9s0)
+26/10/21 23:28:29 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+26/10/21 23:28:31 INFO SparkContext: Running Spark version 4.0.1
+26/10/21 23:28:31 INFO SparkContext: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:28:31 INFO SparkContext: Java version 17.0.20.1
+26/10/21 23:28:31 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26/10/21 23:28:31 INFO ResourceUtils: ==============================================================
+26/10/21 23:28:31 INFO ResourceUtils: No custom resources configured for spark.driver.
+26/10/21 23:28:31 INFO ResourceUtils: ==============================================================
+26/10/21 23:28:31 INFO SparkContext: Submitted application: kmeans_spark_sint_600000
+26/10/21 23:28:31 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+26/10/21 23:28:31 INFO ResourceProfile: Limiting resource is cpu
+26/10/21 23:28:31 INFO ResourceProfileManager: Added ResourceProfile id: 0
+26/10/21 23:28:31 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:28:31 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:28:31 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:28:31 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:28:31 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:28:31 INFO Utils: Successfully started service 'sparkDriver' on port 37955.
+26/10/21 23:28:31 INFO SparkEnv: Registering MapOutputTracker
+26/10/21 23:28:31 INFO SparkEnv: Registering BlockManagerMaster
+26/10/21 23:28:31 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+26/10/21 23:28:31 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+26/10/21 23:28:31 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+26/10/21 23:28:31 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-25f012b1-ca16-4f4c-8747-7f82a7c9cb89
+26/10/21 23:28:31 INFO SparkEnv: Registering OutputCommitCoordinator
+26/10/21 23:28:32 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+26/10/21 23:28:32 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+26/10/21 23:28:32 INFO SecurityManager: Changing view acls to: labalto
+26/10/21 23:28:32 INFO SecurityManager: Changing modify acls to: labalto
+26/10/21 23:28:32 INFO SecurityManager: Changing view acls groups to: labalto
+26/10/21 23:28:32 INFO SecurityManager: Changing modify acls groups to: labalto
+26/10/21 23:28:32 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: labalto groups with view permissions: EMPTY; users with modify permissions: labalto; groups with modify permissions: EMPTY; RPC SSL disabled
+26/10/21 23:28:32 INFO Executor: Starting executor ID driver on host 10.0.1.11
+26/10/21 23:28:32 INFO Executor: OS info Linux, 6.8.0-147-generic, amd64
+26/10/21 23:28:32 INFO Executor: Java version 17.0.20.1
+26/10/21 23:28:32 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+26/10/21 23:28:32 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@713e2ce8 for default.
+26/10/21 23:28:32 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 39893.
+26/10/21 23:28:32 INFO NettyBlockTransferService: Server created on 10.0.1.11:39893
+26/10/21 23:28:32 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+26/10/21 23:28:32 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 10.0.1.11, 39893, None)
+26/10/21 23:28:32 INFO BlockManagerMasterEndpoint: Registering block manager 10.0.1.11:39893 with 4.6 GiB RAM, BlockManagerId(driver, 10.0.1.11, 39893, None)
+26/10/21 23:28:32 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 10.0.1.11, 39893, None)
+26/10/21 23:28:32 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 10.0.1.11, 39893, None)
+master=local[16] partições=16 cache=False somas=onehot | OPENBLAS_NUM_THREADS nos executores=['1']
+N=600000 d=256 k=64 iter=20 | dist=0.425s total=15.746s | inércia final=88192.307179 | não crescente: True
+max |C_spark - C_seq| = 1.44e-15
+RESULTADO,spark,16,600000,256,64,20,0.425192,15.745957,,,88192.307179

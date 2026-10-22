@@ -1,0 +1,10 @@
+=== 2026-10-20 00:24:37 rep=1 p=1 oversub=0 | carga: 0.01 0.01 0.05
+mpiexec -n 1 python kmeans_mpi.py --nome sint_20000
+p=1 N=20000 d=256 k=64 iter=20 | dist=0.016s total=2.248s comp=2.243s comm=0.001s | inércia final=3460.713486
+max |C_mpi - C_seq| = 0.00e+00
+RESULTADO,mpi,1,20000,256,64,20,0.016002,2.248080,2.242613,0.000961,3460.713486
+=== 2026-10-20 00:24:40 rep=1 p=2 oversub=0 | carga: 0.09 0.03 0.05
+mpiexec -n 2 python kmeans_mpi.py --nome sint_20000
+p=2 N=20000 d=256 k=64 iter=20 | dist=0.014s total=1.178s comp=1.162s comm=0.019s | inércia final=3460.713486
+max |C_mpi - C_seq| = 2.78e-16
+RESULTADO,mpi,2,20000,256,64,20,0.014341,1.177766,1.162500,0.018885,3460.713486

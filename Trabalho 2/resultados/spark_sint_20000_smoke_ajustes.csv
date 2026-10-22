@@ -1,0 +1,3 @@
+impl,p,N,d,k,iter,t_dist,t_total,t_comp,t_comm,inercia,rep,oversub,variante
+spark,1,20000,256,64,20,0.706684,14.505335,,,3460.713486,1,0,smoke_ajustes
+spark,2,20000,256,64,20,0.610313,10.586122,,,3460.713486,1,0,smoke_ajustes

@@ -1,0 +1,3 @@
+impl,p,N,d,k,iter,t_dist,t_total,t_comp,t_comm,inercia,rep,oversub,variante
+spark,1,20000,256,64,20,0.723323,16.145442,,,3460.713486,1,0,base
+spark,2,20000,256,64,20,0.616371,10.539454,,,3460.713486,1,0,base
