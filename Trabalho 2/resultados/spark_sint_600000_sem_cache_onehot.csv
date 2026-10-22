@@ -1,0 +1,7 @@
+impl,p,N,d,k,iter,t_dist,t_total,t_comp,t_comm,inercia,rep,oversub,variante
+spark,4,600000,256,64,20,0.483174,20.655676,,,88192.307179,1,0,sem_cache_onehot
+spark,16,600000,256,64,20,0.421360,15.963896,,,88192.307179,1,0,sem_cache_onehot
+spark,4,600000,256,64,20,0.464182,20.006792,,,88192.307179,2,0,sem_cache_onehot
+spark,16,600000,256,64,20,0.429891,15.870622,,,88192.307179,2,0,sem_cache_onehot
+spark,4,600000,256,64,20,0.482563,20.361997,,,88192.307179,3,0,sem_cache_onehot
+spark,16,600000,256,64,20,0.425192,15.745957,,,88192.307179,3,0,sem_cache_onehot

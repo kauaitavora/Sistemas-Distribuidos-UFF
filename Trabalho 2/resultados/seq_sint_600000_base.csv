@@ -1,0 +1,4 @@
+impl,p,N,d,k,iter,t_dist,t_total,t_comp,t_comm,inercia,rep,oversub,variante
+seq,1,600000,256,64,20,,67.303524,,,88192.307179,1,0,base
+seq,1,600000,256,64,20,,69.686561,,,88192.307179,2,0,base
+seq,1,600000,256,64,20,,67.298561,,,88192.307179,3,0,base

@@ -1,0 +1,12 @@
+=== 2026-10-21 22:48:27 rep=1 p=1 oversub=0 | carga: 0.20 0.09 0.14
+mpiexec -n 1 python kmeans_mpi.py --nome sint_20000
+comunicacao=allreduce somas=add_at
+p=1 N=20000 d=256 k=64 iter=20 | dist=0.026s total=2.306s comp=2.299s comm=0.001s | inércia final=3460.713486
+max |C_mpi - C_seq| = 0.00e+00
+RESULTADO,mpi,1,20000,256,64,20,0.025613,2.306433,2.298988,0.000954,3460.713486
+=== 2026-10-21 22:48:30 rep=1 p=2 oversub=0 | carga: 0.27 0.11 0.15
+mpiexec -n 2 python kmeans_mpi.py --nome sint_20000
+comunicacao=allreduce somas=add_at
+p=2 N=20000 d=256 k=64 iter=20 | dist=0.014s total=1.178s comp=1.173s comm=0.034s | inércia final=3460.713486
+max |C_mpi - C_seq| = 2.78e-16
+RESULTADO,mpi,2,20000,256,64,20,0.014312,1.178078,1.172768,0.034019,3460.713486

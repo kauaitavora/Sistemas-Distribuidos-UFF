@@ -1,0 +1,54 @@
+=== 2026-10-20 16:19:29 rep=1 p=1 oversub=0 | carga: 0.03 0.38 0.46
+mpiexec -n 1 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=1 N=600000 d=256 k=64 iter=20 | dist=0.405s total=45.755s comp=45.648s comm=0.002s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.67e-15
+RESULTADO,mpi,1,600000,256,64,20,0.405150,45.755470,45.647872,0.001553,88192.307179
+=== 2026-10-20 16:20:16 rep=1 p=4 oversub=0 | carga: 0.58 0.47 0.49
+mpiexec -n 4 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=4 N=600000 d=256 k=64 iter=20 | dist=0.385s total=11.929s comp=11.884s comm=0.306s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.39e-15
+RESULTADO,mpi,4,600000,256,64,20,0.385268,11.928625,11.884120,0.306130,88192.307179
+=== 2026-10-20 16:20:29 rep=1 p=16 oversub=0 | carga: 1.11 0.59 0.53
+mpiexec -n 16 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=16 N=600000 d=256 k=64 iter=20 | dist=0.414s total=4.718s comp=4.645s comm=0.084s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.44e-15
+RESULTADO,mpi,16,600000,256,64,20,0.414110,4.717945,4.644930,0.083635,88192.307179
+=== 2026-10-20 16:20:35 rep=2 p=1 oversub=0 | carga: 2.37 0.87 0.62
+mpiexec -n 1 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=1 N=600000 d=256 k=64 iter=20 | dist=0.403s total=45.772s comp=45.664s comm=0.002s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.67e-15
+RESULTADO,mpi,1,600000,256,64,20,0.403326,45.772206,45.663657,0.001549,88192.307179
+=== 2026-10-20 16:21:22 rep=2 p=4 oversub=0 | carga: 1.73 0.92 0.65
+mpiexec -n 4 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=4 N=600000 d=256 k=64 iter=20 | dist=0.384s total=11.891s comp=11.852s comm=0.260s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.39e-15
+RESULTADO,mpi,4,600000,256,64,20,0.384339,11.891114,11.852354,0.260345,88192.307179
+=== 2026-10-20 16:21:35 rep=2 p=16 oversub=0 | carga: 2.23 1.07 0.71
+mpiexec -n 16 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=16 N=600000 d=256 k=64 iter=20 | dist=0.415s total=4.727s comp=4.653s comm=0.088s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.44e-15
+RESULTADO,mpi,16,600000,256,64,20,0.414764,4.726771,4.653292,0.088221,88192.307179
+=== 2026-10-20 16:21:42 rep=3 p=1 oversub=0 | carga: 3.34 1.32 0.79
+mpiexec -n 1 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=1 N=600000 d=256 k=64 iter=20 | dist=0.403s total=45.729s comp=45.622s comm=0.002s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.67e-15
+RESULTADO,mpi,1,600000,256,64,20,0.403030,45.728712,45.621651,0.001504,88192.307179
+=== 2026-10-20 16:22:29 rep=3 p=4 oversub=0 | carga: 2.10 1.27 0.80
+mpiexec -n 4 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=4 N=600000 d=256 k=64 iter=20 | dist=0.381s total=11.645s comp=11.602s comm=0.036s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.39e-15
+RESULTADO,mpi,4,600000,256,64,20,0.381110,11.645082,11.601774,0.035989,88192.307179
+=== 2026-10-20 16:22:42 rep=3 p=16 oversub=0 | carga: 2.39 1.37 0.84
+mpiexec -n 16 python kmeans_mpi.py --nome sint_600000 --somas onehot
+comunicacao=allreduce somas=onehot
+p=16 N=600000 d=256 k=64 iter=20 | dist=0.414s total=4.727s comp=4.653s comm=0.085s | inércia final=88192.307179
+max |C_mpi - C_seq| = 1.44e-15
+RESULTADO,mpi,16,600000,256,64,20,0.413833,4.727238,4.652976,0.085259,88192.307179
