@@ -30,7 +30,7 @@ def atribui(X, C, xx):
     D = cc - 2.0 * (X @ C.T) # N x k: Σ(xi - ci)² SEM o termo Σ(xi²)
 
     rotulos = np.argmin(D, axis=1) # centroide mais próximo de cada ponto
-    dmin = D.min(axis=1) + xx # recoloca Σ(xi²) para obter a distância² verdadeira
+    dmin = D[np.arange(D.shape[0]), rotulos] + xx # recoloca Σ(xi²) para obter a distância² verdadeira
 
     return rotulos, dmin
 
@@ -84,7 +84,7 @@ def main():
     y = np.load(f"{a.pasta}/y_{a.nome}.npy")
     print(f"ARI vs. cluster verdadeiro: {adjusted_rand_score(y, rotulos):.3f}  (0 = aleatório, 1 = perfeito)")
 
-    # mesma linha das versões MPI e Spark (p=1; sem t_dist, t_comp e t_comm), lida pelo rodar_bateria.sh
+    # Mesma linha das versões MPI e Spark (p=1; sem t_dist, t_comp e t_comm), lida pelo rodar_bateria.sh
     print(f"RESULTADO,seq,1,{N},{d},{k},{a.iter},,{t:.6f},,,{inercias[-1]:.6f}")
 
 if __name__ == "__main__":
