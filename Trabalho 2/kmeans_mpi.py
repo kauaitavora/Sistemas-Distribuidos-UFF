@@ -20,10 +20,11 @@ def parse_args():
     return p.parse_args()
 
 def divisao(N, p):
-    """Linhas por processo e início de cada pedaço."""
-    base, resto = divmod(N, p)
-    linhas = np.array([base + (1 if r < resto else 0) for r in range(p)])
-    inicios = np.concatenate(([0], np.cumsum(linhas)[:-1]))
+    """Linhas por processo e início de cada pedaço (counts e displs do Scatterv, em LINHAS).
+    Ex.: N = 10, p = 4 -> linhas = [3, 3, 2, 2], inicios = [0, 3, 6, 8]."""
+    linhas = np.full(p, N // p) # todos recebem a parte inteira da divisão...
+    linhas[: N % p] += 1 # ...e os primeiros (N % p) processos recebem uma linha a mais
+    inicios = np.cumsum(linhas) - linhas # início de cada pedaço = soma dos pedaços anteriores
     return linhas, inicios
 
 def atribui(X, C, xx):
