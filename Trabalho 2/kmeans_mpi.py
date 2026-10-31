@@ -28,11 +28,23 @@ def divisao(N, p):
     return linhas, inicios
 
 def atribui(X, C, xx):
-    """Idêntica ao kmeans_seq.py, mas aplicada só à fatia local."""
-    cc = np.sum(C * C, axis=1) # ||c||² de cada centroide: C é pequeno (k x d), então a legibilidade vale mais
-    D = cc - 2.0 * (X @ C.T)
-    rotulos = np.argmin(D, axis=1)
-    return rotulos, D.min(axis=1) + xx
+    """
+        Idêntica ao kmeans_seq.py, mas aplicada só à fatia local de cada processo.
+        Retorna, para cada ponto de dados, o índice do centroide mais próximo e as
+        respectivas distâncias euclidianas ao quadrado.
+        O cálculo de distância euclidiana entre um ponto de dados e um centroide
+        pode ser escrito como: √[ Σ(xi - ci)² ] = √[ Σ(xi²) - 2 * Σ(xi * ci) + Σ(ci²) ].
+        O termo Σ(xi²) é constante para todas as distâncias entre um mesmo ponto de dados
+        e cada centroide: logo, na verificação de qual é o centroide mais próximo de um
+        ponto de dados, podemos ignorar o termo Σ(xi²).
+    """
+    cc = np.sum(C * C, axis=1) # Σ(ci²) de cada centroide (vetor de tamanho k)
+    D = cc - 2.0 * (X @ C.T) # n_local x k: Σ(xi - ci)² SEM o termo Σ(xi²)
+
+    rotulos = np.argmin(D, axis=1) # centroide mais próximo de cada ponto
+    dmin = D[np.arange(D.shape[0]), rotulos] + xx # recoloca Σ(xi²) para obter a distância² verdadeira
+
+    return rotulos, dmin
 
 def somas_locais(X_local, rotulos, k, modo="add_at"):
     """Metade do 'atualiza' do sequencial: só soma e conta. A divisão fica para DEPOIS do Allreduce."""
@@ -45,7 +57,9 @@ def somas_locais(X_local, rotulos, k, modo="add_at"):
         M = np.zeros((X_local.shape[0], k))
         M[np.arange(X_local.shape[0]), rotulos] = 1.0
         somas = M.T @ X_local
-    contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # float64: mesmo tipo do buffer MPI.DOUBLE
+    # Diferença em relação ao sequencial: aqui as contagens viram float64, porque passam pelo
+    # Allreduce com o MESMO tipo do buffer de recebimento (cont_g, float64 = MPI.DOUBLE).
+    contagens = np.bincount(rotulos, minlength=k).astype(np.float64)
     return somas, contagens
 
 def distribui(comm, pasta, nome):
@@ -79,7 +93,7 @@ def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="add
     t_comp = t_comm = 0.0
 
     comm.Barrier(); t0 = MPI.Wtime() # Barrier: todos começam juntos
-    xx = np.einsum("ij,ij->i", X_local, X_local) # dentro do cronômetro, como no sequencial (einsum: sem cópia temporária de X)
+    xx = np.sum(X_local * X_local, axis=1) # Σ(xi²) de cada ponto: uma vez só, dentro do cronômetro, como no sequencial
     for _ in range(iters):
         ta = MPI.Wtime()
         rotulos, dmin = atribui(X_local, C, xx)
