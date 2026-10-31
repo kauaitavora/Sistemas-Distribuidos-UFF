@@ -12,11 +12,12 @@ def parse_args():
     p.add_argument("--nome", required=True)
     p.add_argument("--pasta", default="dados")
     p.add_argument("--iter", type=int, default=20)
-    # Alterações de desempenho (o padrão é a versão final; a outra opção é o "antes")
+    # Alterações de desempenho: o padrão é a MELHOR versão (a usada no teste principal);
+    # a outra opção é o "antes", usado só para medir o impacto de cada alteração
     p.add_argument("--comunicacao", choices=["allreduce", "reduce_bcast"], default="allreduce",
-                   help="alteração MPI (a): 2 Allreduce x 2 Reduce + 1 Bcast por iteração")
-    p.add_argument("--somas", choices=["add_at", "onehot"], default="add_at",
-                   help="alteração MPI (c): np.add.at x produto de matrizes com a matriz one-hot")
+                   help="alteração MPI (a): 2 Allreduce (padrão) x 2 Reduce + 1 Bcast por iteração")
+    p.add_argument("--somas", choices=["onehot", "add_at"], default="onehot",
+                   help="alteração MPI (c): produto de matrizes com a matriz one-hot (padrão) x np.add.at")
     return p.parse_args()
 
 def divisao(N, p):
@@ -46,17 +47,18 @@ def atribui(X, C, xx):
 
     return rotulos, dmin
 
-def somas_locais(X_local, rotulos, k, modo="add_at"):
+def somas_locais(X_local, rotulos, k, modo="onehot"):
     """Metade do 'atualiza' do sequencial: só soma e conta. A divisão fica para DEPOIS do Allreduce."""
-    if modo == "add_at":
-        somas = np.zeros((k, X_local.shape[1]))
-        np.add.at(somas, rotulos, X_local) # soma linha a linha: laço interno do numpy, sem BLAS
-    else:
+    if modo == "onehot":
         # M[i, j] = 1 se o ponto i está no cluster j. Então (M.T @ X)[j] = soma dos pontos do cluster j.
-        # Mesma conta, mas feita como produto de matrizes (BLAS), que é muito mais rápido.
+        # Soma feita como produto de matrizes (BLAS), que é muito mais rápido.
         M = np.zeros((X_local.shape[0], k))
         M[np.arange(X_local.shape[0]), rotulos] = 1.0
         somas = M.T @ X_local
+    else:
+        # "Antes" da alteração: mesma conta, mas linha a linha (laço interno do numpy, sem BLAS)
+        somas = np.zeros((k, X_local.shape[1]))
+        np.add.at(somas, rotulos, X_local)
     # Diferença em relação ao sequencial: aqui as contagens viram float64, porque passam pelo
     # Allreduce com o MESMO tipo do buffer de recebimento (cont_g, float64 = MPI.DOUBLE).
     contagens = np.bincount(rotulos, minlength=k).astype(np.float64)
@@ -85,7 +87,7 @@ def distribui(comm, pasta, nome):
     comm.Barrier(); t_dist = MPI.Wtime() - t0
     return X_local, C, N, d, k, t_dist # X (inteira) sai de escopo aqui e a memória é liberada
 
-def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="add_at"):
+def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="onehot"):
     k, d = C.shape
     somas_g = np.empty((k, d)) # buffers de recebimento do Allreduce: alocados UMA vez
     cont_g = np.empty(k)
