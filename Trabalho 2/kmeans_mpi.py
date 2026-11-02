@@ -12,39 +12,56 @@ def parse_args():
     p.add_argument("--nome", required=True)
     p.add_argument("--pasta", default="dados")
     p.add_argument("--iter", type=int, default=20)
-    # Alterações de desempenho (o padrão é a versão final; a outra opção é o "antes")
+    # Alterações de desempenho: o padrão é a MELHOR versão (a usada no teste principal);
+    # a outra opção é o "antes", usado só para medir o impacto de cada alteração
     p.add_argument("--comunicacao", choices=["allreduce", "reduce_bcast"], default="allreduce",
-                   help="alteração MPI (a): 2 Allreduce x 2 Reduce + 1 Bcast por iteração")
-    p.add_argument("--somas", choices=["add_at", "onehot"], default="add_at",
-                   help="alteração MPI (c): np.add.at x produto de matrizes com a matriz one-hot")
+                   help="alteração MPI (a): 2 Allreduce (padrão) x 2 Reduce + 1 Bcast por iteração")
+    p.add_argument("--somas", choices=["onehot", "add_at"], default="onehot",
+                   help="alteração MPI (c): produto de matrizes com a matriz one-hot (padrão) x np.add.at")
     return p.parse_args()
 
 def divisao(N, p):
-    """Linhas por processo e início de cada pedaço."""
-    base, resto = divmod(N, p)
-    linhas = np.array([base + (1 if r < resto else 0) for r in range(p)])
-    inicios = np.concatenate(([0], np.cumsum(linhas)[:-1]))
+    """Linhas por processo e início de cada pedaço (counts e displs do Scatterv, em LINHAS).
+    Ex.: N = 10, p = 4 -> linhas = [3, 3, 2, 2], inicios = [0, 3, 6, 8]."""
+    linhas = np.full(p, N // p) # todos recebem a parte inteira da divisão...
+    linhas[: N % p] += 1 # ...e os primeiros (N % p) processos recebem uma linha a mais
+    inicios = np.cumsum(linhas) - linhas # início de cada pedaço = soma dos pedaços anteriores
     return linhas, inicios
 
 def atribui(X, C, xx):
-    """Idêntica ao kmeans_seq.py, mas aplicada só à fatia local."""
-    cc = np.sum(C * C, axis=1) # ||c||² de cada centroide: C é pequeno (k x d), então a legibilidade vale mais
-    D = cc - 2.0 * (X @ C.T)
-    rotulos = np.argmin(D, axis=1)
-    return rotulos, D.min(axis=1) + xx
+    """
+        Idêntica ao kmeans_seq.py, mas aplicada só à fatia local de cada processo.
+        Retorna, para cada ponto de dados, o índice do centroide mais próximo e as
+        respectivas distâncias euclidianas ao quadrado.
+        O cálculo de distância euclidiana entre um ponto de dados e um centroide
+        pode ser escrito como: √[ Σ(xi - ci)² ] = √[ Σ(xi²) - 2 * Σ(xi * ci) + Σ(ci²) ].
+        O termo Σ(xi²) é constante para todas as distâncias entre um mesmo ponto de dados
+        e cada centroide: logo, na verificação de qual é o centroide mais próximo de um
+        ponto de dados, podemos ignorar o termo Σ(xi²).
+    """
+    cc = np.sum(C * C, axis=1) # Σ(ci²) de cada centroide (vetor de tamanho k)
+    D = cc - 2.0 * (X @ C.T) # n_local x k: Σ(xi - ci)² SEM o termo Σ(xi²)
 
-def somas_locais(X_local, rotulos, k, modo="add_at"):
+    rotulos = np.argmin(D, axis=1) # centroide mais próximo de cada ponto
+    dmin = D[np.arange(D.shape[0]), rotulos] + xx # recoloca Σ(xi²) para obter a distância² verdadeira
+
+    return rotulos, dmin
+
+def somas_locais(X_local, rotulos, k, modo="onehot"):
     """Metade do 'atualiza' do sequencial: só soma e conta. A divisão fica para DEPOIS do Allreduce."""
-    if modo == "add_at":
-        somas = np.zeros((k, X_local.shape[1]))
-        np.add.at(somas, rotulos, X_local) # soma linha a linha: laço interno do numpy, sem BLAS
-    else:
+    if modo == "onehot":
         # M[i, j] = 1 se o ponto i está no cluster j. Então (M.T @ X)[j] = soma dos pontos do cluster j.
-        # Mesma conta, mas feita como produto de matrizes (BLAS), que é muito mais rápido.
+        # Soma feita como produto de matrizes (BLAS), que é muito mais rápido.
         M = np.zeros((X_local.shape[0], k))
         M[np.arange(X_local.shape[0]), rotulos] = 1.0
         somas = M.T @ X_local
-    contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # float64: mesmo tipo do buffer MPI.DOUBLE
+    else:
+        # "Antes" da alteração: mesma conta, mas linha a linha (laço interno do numpy, sem BLAS)
+        somas = np.zeros((k, X_local.shape[1]))
+        np.add.at(somas, rotulos, X_local)
+    # Diferença em relação ao sequencial: aqui as contagens viram float64, porque passam pelo
+    # Allreduce com o MESMO tipo do buffer de recebimento (cont_g, float64 = MPI.DOUBLE).
+    contagens = np.bincount(rotulos, minlength=k).astype(np.float64)
     return somas, contagens
 
 def distribui(comm, pasta, nome):
@@ -70,7 +87,7 @@ def distribui(comm, pasta, nome):
     comm.Barrier(); t_dist = MPI.Wtime() - t0
     return X_local, C, N, d, k, t_dist # X (inteira) sai de escopo aqui e a memória é liberada
 
-def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="add_at"):
+def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="onehot"):
     k, d = C.shape
     somas_g = np.empty((k, d)) # buffers de recebimento do Allreduce: alocados UMA vez
     cont_g = np.empty(k)
@@ -78,7 +95,7 @@ def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="add
     t_comp = t_comm = 0.0
 
     comm.Barrier(); t0 = MPI.Wtime() # Barrier: todos começam juntos
-    xx = np.einsum("ij,ij->i", X_local, X_local) # dentro do cronômetro, como no sequencial (einsum: sem cópia temporária de X)
+    xx = np.sum(X_local * X_local, axis=1) # Σ(xi²) de cada ponto: uma vez só, dentro do cronômetro, como no sequencial
     for _ in range(iters):
         ta = MPI.Wtime()
         rotulos, dmin = atribui(X_local, C, xx)
