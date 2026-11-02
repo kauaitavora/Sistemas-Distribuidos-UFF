@@ -1,10 +1,8 @@
-"""Gráficos dos resultados do K-means. Cada função gera uma imagem."""
 from pathlib import Path
 from statistics import stdev
-
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+matplotlib.use("Agg")
 
 
 def salvar(figura, pasta, arquivo):
@@ -37,7 +35,7 @@ def grafico_tempo(tabela, pasta, nome):
         if linha["impl"] == "seq":
             ax.axhline(linha["media_s"], color="gray", linestyle="--", label="Sequencial")
 
-    ax.set_title(f"Tempo: média ± desvio padrão — {nome}")
+    ax.set_title(f"Tempo: média +- desvio padrão — {nome}")
     ax.set_ylabel("Tempo do laço (s, escala log)")
     ax.set_yscale("log")
     eixo_paralelismo(ax, tabela)
@@ -152,7 +150,7 @@ def grafico_tempo_alteracoes(alteracoes, grupos, pasta, nome):
     ax.barh([i + 0.2 for i in posicoes], medias_alteracao, height=0.35, xerr=desvios_alteracao, capsize=3, label="Alteração")
     ax.set_yticks(posicoes, labels=rotulos_alteracoes(alteracoes))
     ax.invert_yaxis()
-    ax.set_xlabel("Tempo do laço (s): média ± desvio padrão")
+    ax.set_xlabel("Tempo do laço (s): média +- desvio padrão")
     ax.set_title(f"Tempo antes e depois das alterações — {nome}")
     ax.legend()
 
