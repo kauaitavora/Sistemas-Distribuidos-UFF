@@ -19,42 +19,59 @@ def parse_args():
     # Alteração Spark (b): sem cache, cada iteração refaz a leitura dos blocos e o cálculo de Σ(xi²)
     p.add_argument("--sem-cache", action="store_true", help="não chama cache() no RDD dos dados")
 
-    p.add_argument("--somas", choices=["add_at", "onehot"], default="add_at",
-                   help="mesma troca da alteração MPI (c), para comparar o efeito nos dois modelos")
+    # Alterações de desempenho: o padrão é a MELHOR versão (a usada no teste principal);
+    # a outra opção é o "antes", usado só para medir o impacto de cada alteração
+    p.add_argument("--somas", choices=["add_at", "onehot"], default="one_hot",
+                   help="produto de matrizes com a matriz one-hot (padrão) x np.add.at")
     
     return p.parse_args()
 
 def divisao(N, p):
-    """Linhas por processo e início de cada pedaço."""
-    base, resto = divmod(N, p)
-    linhas = np.array([base + (1 if r < resto else 0) for r in range(p)])
-    inicios = np.concatenate(([0], np.cumsum(linhas)[:-1]))
+    """Linhas por processo e início de cada pedaço.
+    Ex.: N = 10, p = 4 -> linhas = [3, 3, 2, 2], inicios = [0, 3, 6, 8]."""
+    linhas = np.full(p, N // p) # todos recebem a parte inteira da divisão...
+    linhas[: N % p] += 1 # ...e os primeiros (N % p) processos recebem uma linha a mais
+    inicios = np.cumsum(linhas) - linhas # início de cada pedaço = soma dos pedaços anteriores
     return linhas, inicios
 
 def atribui(X, C, xx):
-    """Idêntica ao kmeans_seq.py, mas aplicada só à fatia local."""
-    cc = np.sum(C * C, axis=1) # Σ(ci²) de cada centroide: C é pequeno (k x d), então a legibilidade vale mais
-    D = cc - 2.0 * (X @ C.T)
-    rotulos = np.argmin(D, axis=1)
-    return rotulos, D.min(axis=1) + xx
+    """
+        Idêntica ao kmeans_seq.py, mas aplicada só à fatia local de cada processo.
+        Retorna, para cada ponto de dados, o índice do centroide mais próximo e as
+        respectivas distâncias euclidianas ao quadrado.
+        O cálculo de distância euclidiana entre um ponto de dados e um centroide
+        pode ser escrito como: √[ Σ(xi - ci)² ] = √[ Σ(xi²) - 2 * Σ(xi * ci) + Σ(ci²) ].
+        O termo Σ(xi²) é constante para todas as distâncias entre um mesmo ponto de dados
+        e cada centroide: logo, na verificação de qual é o centroide mais próximo de um
+        ponto de dados, podemos ignorar o termo Σ(xi²).
+    """
+    cc = np.sum(C * C, axis=1) # Σ(ci²) de cada centroide (vetor de tamanho k)
+    D = cc - 2.0 * (X @ C.T) # n_local x k: Σ(xi - ci)² SEM o termo Σ(xi²)
+
+    rotulos = np.argmin(D, axis=1) # centroide mais próximo de cada ponto
+    dmin = D[np.arange(D.shape[0]), rotulos] + xx # recoloca Σ(xi²) para obter a distância² verdadeira
+
+    return rotulos, dmin
 
 def somas_locais(X_local, rotulos, k, modo="add_at"):
-    """Metade do 'atualiza' do sequencial: só soma e conta. A divisão fica para DEPOIS do Allreduce."""
-    if modo == "add_at":
-        somas = np.zeros((k, X_local.shape[1]))
-        np.add.at(somas, rotulos, X_local) # soma linha a linha: laço interno do numpy, sem BLAS
-    else:
-        # (M.T @ X)[j] = soma dos pontos do cluster j, com M one-hot (N_local x k): BLAS
+    """Metade do 'atualiza' do sequencial: só soma e conta."""
+    if modo == "one_hot":
+        # M[i, j] = 1 se o ponto i está no cluster j. Então (M.T @ X)[j] = soma dos pontos do cluster j.
+        # Soma feita como produto de matrizes (BLAS), que é muito mais rápido.
         M = np.zeros((X_local.shape[0], k))
         M[np.arange(X_local.shape[0]), rotulos] = 1.0
         somas = M.T @ X_local
+    else:
+        # "Antes" da alteração: mesma conta, mas linha a linha (laço interno do numpy, sem BLAS)
+        somas = np.zeros((k, X_local.shape[1]))
+        np.add.at(somas, rotulos, X_local)
     
-    contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # float64: mesmo tipo do buffer MPI.DOUBLE
+    contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # float64: mesmo tipo usado na versão com MPI
     return somas, contagens
 
 def distribui(sc, caminho, P, usa_cache=True):
     N, d = np.load(caminho, mmap_mode="r").shape # lê só o cabeçalho do .npy (N e d)
-    linhas, inicios = divisao(N, P) # mesma divisão por linhas do MPI
+    linhas, inicios = divisao(N, P) # mesma divisão por linhas da versão com MPI
 
     def carrega_bloco(i):
         # Roda NO EXECUTOR: mapeia o arquivo e copia para a memória só as linhas do bloco i
@@ -122,6 +139,8 @@ def main():
         conf.setExecutorEnv(var, "1")
 
     sc = SparkContext(conf=conf)
+
+    # Diminui drasticamente a quantidade de informações no log de terminal do Spark.
     sc.setLogLevel("WARN")
 
     caminho = os.path.abspath(f"{a.pasta}/X_{a.nome}.npy") # caminho ABSOLUTO: o executor roda em outra pasta
@@ -147,7 +166,7 @@ def main():
     
     print(f"max |C_spark - C_seq| = {np.abs(C - C_seq).max():.2e}")
 
-    # mesmas colunas do MPI; comp/comm ficam vazios (o Spark não expõe essa separação no driver)
+    # mesmas colunas da versão com MPI; comp/comm ficam vazios (o Spark não expõe essa separação no driver)
     print(f"RESULTADO,spark,{P},{N},{d},{k},{a.iter},{t_dist:.6f},{t_total:.6f},,,{inercias[-1]:.6f}")
 
     sc.stop()
