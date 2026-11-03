@@ -1,4 +1,4 @@
-# K-Means de Lloyd em PySpark (RDD): cache + broadcast + mapPartitions + treeAggregate
+# K-Means de Lloyd em PySpark (RDD): cache (opcional) + broadcast + mapPartitions + treeAggregate
 import os
 for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(var, "1") # vale só para o DRIVER; para os executores, ver SparkConf no main
@@ -69,7 +69,7 @@ def somas_locais(X_local, rotulos, k, modo="add_at"):
     contagens = np.bincount(rotulos, minlength=k).astype(np.float64) # float64: mesmo tipo usado na versão com MPI
     return somas, contagens
 
-def distribui(sc, caminho, P, usa_cache=True):
+def distribui(sc, caminho, P, usa_cache=False):
     N, d = np.load(caminho, mmap_mode="r").shape # lê só o cabeçalho do .npy (N e d)
     linhas, inicios = divisao(N, P) # mesma divisão por linhas da versão com MPI
 
