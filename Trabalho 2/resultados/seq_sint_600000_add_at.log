@@ -1,0 +1,64 @@
+=== 2026-11-03 13:10:44 rep=1 p=1 oversub=0 | carga: 0.17 2.14 7.05
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:10:44 rep=2 p=1 oversub=0 | carga: 0.17 2.14 7.05
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:10:44 rep=3 p=1 oversub=0 | carga: 0.17 2.14 7.05
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:10:55 rep=1 p=1 oversub=0 | carga: 0.15 2.07 6.97
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:10:55 rep=2 p=1 oversub=0 | carga: 0.15 2.07 6.97
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:10:55 rep=3 p=1 oversub=0 | carga: 0.15 2.07 6.97
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:23:04 rep=1 p=1 oversub=0 | carga: 0.09 0.30 3.23
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:23:04 rep=2 p=1 oversub=0 | carga: 0.09 0.30 3.23
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:23:04 rep=3 p=1 oversub=0 | carga: 0.09 0.30 3.23
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+rodar_bateria.sh: line 67: python: command not found
+=== 2026-11-03 13:24:09 rep=1 p=1 oversub=0 | carga: 0.52 0.37 3.05
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+N=600000 d=256 k=64 iter=20 | tempo=66.475s (3323.7 ms/iter)
+inércia: inicial=265939.549519 final=88192.307179 | não crescente: True
+tamanhos dos clusters: min=0 max=18894
+ARI vs. cluster verdadeiro: 0.867  (0 = aleatório, 1 = perfeito)
+RESULTADO,seq,1,600000,256,64,20,,66.474701,,,88192.307179
+=== 2026-11-03 13:25:18 rep=2 p=1 oversub=0 | carga: 0.85 0.50 2.90
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+N=600000 d=256 k=64 iter=20 | tempo=66.713s (3335.6 ms/iter)
+inércia: inicial=265939.549519 final=88192.307179 | não crescente: True
+tamanhos dos clusters: min=0 max=18894
+ARI vs. cluster verdadeiro: 0.867  (0 = aleatório, 1 = perfeito)
+RESULTADO,seq,1,600000,256,64,20,,66.712568,,,88192.307179
+=== 2026-11-03 13:26:26 rep=3 p=1 oversub=0 | carga: 1.58 0.79 2.83
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+=== 2026-11-03 13:31:53 rep=1 p=1 oversub=0 | carga: 0.07 0.58 2.16
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+N=600000 d=256 k=64 iter=20 | tempo=68.235s (3411.8 ms/iter)
+inércia: inicial=265939.549519 final=88192.307179 | não crescente: True
+tamanhos dos clusters: min=0 max=18894
+ARI vs. cluster verdadeiro: 0.867  (0 = aleatório, 1 = perfeito)
+RESULTADO,seq,1,600000,256,64,20,,68.235069,,,88192.307179
+=== 2026-11-03 13:33:03 rep=2 p=1 oversub=0 | carga: 0.71 0.67 2.07
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+N=600000 d=256 k=64 iter=20 | tempo=66.828s (3341.4 ms/iter)
+inércia: inicial=265939.549519 final=88192.307179 | não crescente: True
+tamanhos dos clusters: min=0 max=18894
+ARI vs. cluster verdadeiro: 0.867  (0 = aleatório, 1 = perfeito)
+RESULTADO,seq,1,600000,256,64,20,,66.827742,,,88192.307179
+=== 2026-11-03 13:34:12 rep=3 p=1 oversub=0 | carga: 0.90 0.74 1.99
+python kmeans_seq.py --nome sint_600000 --iter 20 --somas add_at
+N=600000 d=256 k=64 iter=20 | tempo=66.591s (3329.6 ms/iter)
+inércia: inicial=265939.549519 final=88192.307179 | não crescente: True
+tamanhos dos clusters: min=0 max=18894
+ARI vs. cluster verdadeiro: 0.867  (0 = aleatório, 1 = perfeito)
+RESULTADO,seq,1,600000,256,64,20,,66.591369,,,88192.307179
