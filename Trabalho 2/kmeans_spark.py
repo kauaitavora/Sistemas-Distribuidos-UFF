@@ -17,7 +17,7 @@ def parse_args():
                    help="nº de partições (0 = nº de núcleos do Spark, defaultParallelism)")
     
     # Alteração Spark (b): sem cache, cada iteração refaz a leitura dos blocos e o cálculo de Σ(xi²)
-    p.add_argument("--com-cache", action="store_true", help="não chama cache() no RDD dos dados")
+    p.add_argument("--com-cache", action="store_true", help="chama cache() no RDD dos dados")
 
     # Alterações de desempenho: o padrão é a MELHOR versão (a usada no teste principal);
     # a outra opção é o "antes", usado só para medir o impacto de cada alteração
