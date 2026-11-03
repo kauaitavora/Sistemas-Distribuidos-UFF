@@ -17,7 +17,7 @@ def parse_args():
     p.add_argument("--comunicacao", choices=["allreduce", "reduce_bcast"], default="allreduce",
                    help="alteração MPI (a): 2 Allreduce (padrão) x 2 Reduce + 1 Bcast por iteração")
     p.add_argument("--somas", choices=["onehot", "add_at"], default="onehot",
-                   help="alteração MPI (c): produto de matrizes com a matriz one-hot (padrão) x np.add.at")
+                   help="alteração MPI (b): produto de matrizes com a matriz one-hot (padrão) x np.add.at")
     return p.parse_args()
 
 def divisao(N, p):

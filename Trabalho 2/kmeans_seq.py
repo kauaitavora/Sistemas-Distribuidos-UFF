@@ -14,6 +14,10 @@ def parse_args():
     p.add_argument("--nome", required=True, help="sufixo dos dados: real, sint_20000, ...")
     p.add_argument("--pasta", default="dados")
     p.add_argument("--iter", type=int, default=20, help="nº FIXO de iterações (igual em todas as versões)")
+
+    p.add_argument("--somas", choices=["onehot", "add_at"], default="onehot",
+                   help="alteração Seq: produto de matrizes com a matriz one-hot (padrão) x np.add.at")
+    
     return p.parse_args()
 
 def atribui(X, C, xx):
@@ -34,18 +38,26 @@ def atribui(X, C, xx):
 
     return rotulos, dmin
 
-def atualiza(X, rotulos, C):
+def atualiza(X, rotulos, C, modo="onehot"):
     """Novos centroides = soma dos pontos de cada cluster ÷ quantidade."""
-    d = X.shape[1]; k = C.shape[0]
+    N = X.shape[0]; d = X.shape[1]; k = C.shape[0]
     
-    somas = np.zeros((k, d)) # k x d
-    np.add.at(somas, rotulos, X) # soma cada linha de X na linha do seu cluster
+    if modo == "onehot":
+        # M[i, j] = 1 se o ponto i está no cluster j. Então (M.T @ X)[j] = soma dos pontos do cluster j.
+        # Soma feita como produto de matrizes (BLAS), que é muito mais rápido.
+        M = np.zeros((N, k))
+        M[np.arange(N), rotulos] = 1.0
+        somas = M.T @ X
+    else:
+        # "Antes" da alteração: mesma conta, mas linha a linha (laço interno do numpy, sem BLAS)
+        somas = np.zeros((k, d))
+        np.add.at(somas, rotulos, X)
 
     contagens = np.bincount(rotulos, minlength=k) # k
     ok = contagens > 0 # regra do cluster vazio: mantém o centroide antigo
     C[ok] = somas[ok] / contagens[ok, None]
 
-def kmeans(X, C0, iters):
+def kmeans(X, C0, iters, modo_somas="onehot"):
     xx = np.sum(X * X, axis=1) # ||x||² de cada ponto: calculado uma vez, reaproveitado.
     C = C0.copy() # nunca alteramos o C0 original
     inercias = []
@@ -53,7 +65,7 @@ def kmeans(X, C0, iters):
     for _ in range(iters):
         rotulos, dmin = atribui(X, C, xx)
         inercias.append(dmin.sum()) # inércia = soma das distâncias² (com os centroides ANTES de atualizar)
-        atualiza(X, rotulos, C)
+        atualiza(X, rotulos, C, modo_somas)
     
     return C, rotulos, inercias
 
@@ -64,7 +76,7 @@ def main():
     N, d = X.shape; k = C0.shape[0]
 
     t0 = time.perf_counter() # cronômetro SÓ em volta do laço (leitura fica fora)
-    C, rotulos, inercias = kmeans(X, C0, a.iter)
+    C, rotulos, inercias = kmeans(X, C0, a.iter, a.somas)
     t = time.perf_counter() - t0
 
     # Lloyd garante inércia não crescente (tolerância para arredondamento)
