@@ -1,4 +1,4 @@
-# K-Means de Lloyd com MPI (mpi4py): Scatterv + Bcast + Allreduce
+# K-Means de Lloyd com MPI (mpi4py): Scatterv + Bcast + Allreduce + Reduce
 import os
 for var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
     os.environ.setdefault(var, "1") # 1 processo MPI = 1 núcleo (antes do import numpy!)
@@ -48,7 +48,7 @@ def atribui(X, C, xx):
     return rotulos, dmin
 
 def somas_locais(X_local, rotulos, k, modo="onehot"):
-    """Metade do 'atualiza' do sequencial: só soma e conta. A divisão fica para DEPOIS do Allreduce."""
+    """Metade do 'atualiza' do sequencial: só soma e conta."""
     if modo == "onehot":
         # M[i, j] = 1 se o ponto i está no cluster j. Então (M.T @ X)[j] = soma dos pontos do cluster j.
         # Soma feita como produto de matrizes (BLAS), que é muito mais rápido.
@@ -60,7 +60,7 @@ def somas_locais(X_local, rotulos, k, modo="onehot"):
         somas = np.zeros((k, X_local.shape[1]))
         np.add.at(somas, rotulos, X_local)
     # Diferença em relação ao sequencial: aqui as contagens viram float64, porque passam pelo
-    # Allreduce com o MESMO tipo do buffer de recebimento (cont_g, float64 = MPI.DOUBLE).
+    # MESMO tipo do buffer de recebimento (cont_g, float64 = MPI.DOUBLE).
     contagens = np.bincount(rotulos, minlength=k).astype(np.float64)
     return somas, contagens
 
@@ -89,7 +89,7 @@ def distribui(comm, pasta, nome):
 
 def kmeans_mpi(comm, X_local, C, iters, comunicacao="allreduce", modo_somas="onehot"):
     k, d = C.shape
-    somas_g = np.empty((k, d)) # buffers de recebimento do Allreduce: alocados UMA vez
+    somas_g = np.empty((k, d)) # buffers de recebimento: alocados UMA vez
     cont_g = np.empty(k)
     raiz = comm.Get_rank() == 0
     t_comp = t_comm = 0.0
