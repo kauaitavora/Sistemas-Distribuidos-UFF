@@ -21,7 +21,7 @@ def parse_args():
 
     # Alterações de desempenho: o padrão é a MELHOR versão (a usada no teste principal);
     # a outra opção é o "antes", usado só para medir o impacto de cada alteração
-    p.add_argument("--somas", choices=["add_at", "onehot"], default="one_hot",
+    p.add_argument("--somas", choices=["onehot", "add_at"], default="onehot",
                    help="produto de matrizes com a matriz one-hot (padrão) x np.add.at")
     
     return p.parse_args()
@@ -55,7 +55,7 @@ def atribui(X, C, xx):
 
 def somas_locais(X_local, rotulos, k, modo="add_at"):
     """Metade do 'atualiza' do sequencial: só soma e conta."""
-    if modo == "one_hot":
+    if modo == "onehot":
         # M[i, j] = 1 se o ponto i está no cluster j. Então (M.T @ X)[j] = soma dos pontos do cluster j.
         # Soma feita como produto de matrizes (BLAS), que é muito mais rápido.
         M = np.zeros((X_local.shape[0], k))
