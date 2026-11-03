@@ -1,6 +1,6 @@
 # Trabalho 2: K-Means em MPI × Spark
 
-Agrupamento de documentos (vetores numéricos N × d) com o K-Means de Lloyd, implementado em **Python + MPI (mpi4py)** e em **PySpark (RDD)**, executado no cluster da disciplina e comparado seguindo a metodologia de Saxena et al. (2020), *Comparison of MPI and Spark for Data Science Applications*.
+Agrupamento de pontos de dados (vetores numéricos N × d) com o K-Means de Lloyd, implementado em **Python + MPI (mpi4py)** e em **PySpark (RDD)**, executado no cluster da disciplina e comparado seguindo a metodologia de Saxena et al. (2020), *Comparison of MPI and Spark for Data Science Applications*.
 
 **Resumo dos resultados** (N = 600 mil, d = 256, k = 64, 20 iterações, 1 nó com 16 núcleos físicos):
 
@@ -19,7 +19,7 @@ Agrupamento de documentos (vetores numéricos N × d) com o K-Means de Lloyd, im
 - **Atualização:** usa **somas e contagens** por cluster e só divide no fim. "Média de médias" estaria errada com grupos de tamanhos diferentes.
 - **Cluster vazio:** mantém o centroide anterior.
 - **Dados (`gera_dados.py`):**
-  - k "temas" não negativos mais ruído, com cada linha normalizada para norma 1. Com norma 1, a distância euclidiana equivale ao cosseno, a medida usual para textos.
+  - k centroides não negativos mais ruído, com cada linha normalizada para norma 1. Com norma 1, a distância euclidiana equivale ao cosseno.
   - Matriz **densa, float64 e contígua**, salva em `.npy`. Os buffers das primitivas MPI em maiúscula exigem isso.
   - A geração é feita **uma única vez, fora das medições**. As três versões leem o mesmo arquivo.
   - No cluster, os dados foram gerados no próprio nó e conferidos pelas somas de X e de C0. Por exemplo, `sint_20000`: soma(X) = 226919.462829, soma(C0) = 722.818748.

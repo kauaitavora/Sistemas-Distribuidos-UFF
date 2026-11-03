@@ -17,7 +17,7 @@ def parse_args():
                    help="nº de partições (0 = nº de núcleos do Spark, defaultParallelism)")
     
     # Alteração Spark (b): sem cache, cada iteração refaz a leitura dos blocos e o cálculo de Σ(xi²)
-    p.add_argument("--sem-cache", action="store_true", help="não chama cache() no RDD dos dados")
+    p.add_argument("--com-cache", action="store_true", help="não chama cache() no RDD dos dados")
 
     # Alterações de desempenho: o padrão é a MELHOR versão (a usada no teste principal);
     # a outra opção é o "antes", usado só para medir o impacto de cada alteração
@@ -148,7 +148,7 @@ def main():
     P = a.particoes or sc.defaultParallelism # partições = núcleos
     C0 = np.load(f"{a.pasta}/C0_{a.nome}.npy")
 
-    rdd, N, d, t_dist = distribui(sc, caminho, P, usa_cache=not a.sem_cache)
+    rdd, N, d, t_dist = distribui(sc, caminho, P, usa_cache=a.com_cache)
     C, inercias, t_total = kmeans_spark(sc, rdd, C0, a.iter, a.somas)
     
     np.save(f"{a.pasta}/C_spark_{a.nome}_P{P}.npy", C)
@@ -159,7 +159,7 @@ def main():
     monotona = all(b <= x * (1 + 1e-12) for x, b in zip(inercias, inercias[1:]))
     k = C0.shape[0]
 
-    print(f"master={sc.master} partições={P} cache={not a.sem_cache} somas={a.somas}")
+    print(f"master={sc.master} partições={P} cache={a.com_cache} somas={a.somas}")
 
     print(f"N={N} d={d} k={k} iter={a.iter} | dist={t_dist:.3f}s total={t_total:.3f}s | "
           f"inércia final={inercias[-1]:.6f} | não crescente: {monotona}")
