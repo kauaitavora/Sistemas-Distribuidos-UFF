@@ -4,11 +4,10 @@ Agrupamento de pontos de dados (vetores numéricos N × d) com o K-Means de Lloy
 
 **Resumo dos resultados** (N = 600 mil, d = 256, k = 64, 20 iterações, 1 nó com 16 núcleos físicos):
 
-- **MPI:** speedup de **11,3** com 16 processos (eficiência de 70%).
-- **Spark:** speedup de **8,8** com 16 núcleos (eficiência de 55%).
-- **O Spark foi de 4,9× a 6,2× mais lento que o MPI** com o mesmo número de núcleos.
+- **MPI:** speedup de aproximadamente **9,7** vezes com 16 processos (eficiência de cerca de 60%).
+- **Spark:** speedup de aproximadamente **3,8** vezes com 16 núcleos (eficiência de cerca de 24%).
+- **O Spark foi consideravelmente mais lento que o MPI**.
 - **Os dois param de ganhar a partir de 16:** é o número de núcleos físicos do nó.
-- **Validação:** as **115 execuções** (sequencial, MPI, Spark e todas as variantes) terminaram com a **mesma inércia**, 88192.307179.
 
 ---
 
@@ -19,11 +18,10 @@ Agrupamento de pontos de dados (vetores numéricos N × d) com o K-Means de Lloy
 - **Atualização:** usa **somas e contagens** por cluster e só divide no fim. "Média de médias" estaria errada com grupos de tamanhos diferentes.
 - **Cluster vazio:** mantém o centroide anterior.
 - **Dados (`gera_dados.py`):**
-  - k centroides não negativos mais ruído, com cada linha normalizada para norma 1. Com norma 1, a distância euclidiana equivale ao cosseno.
+  - k centroides mais ruído, com cada linha normalizada para norma 1.
   - Matriz **densa, float64 e contígua**, salva em `.npy`. Os buffers das primitivas MPI em maiúscula exigem isso.
   - A geração é feita **uma única vez, fora das medições**. As três versões leem o mesmo arquivo.
   - No cluster, os dados foram gerados no próprio nó e conferidos pelas somas de X e de C0. Por exemplo, `sint_20000`: soma(X) = 226919.462829, soma(C0) = 722.818748.
-- **Validação com texto real:** durante o desenvolvimento, as versões também foram validadas com o **20 Newsgroups** (TF-IDF com 20 mil termos → TruncatedSVD com d = 256 → norma 1; N = 18.278, k = 20). A inércia foi idêntica nas três versões, com max |C − C_seq| ≤ 5,6e-16. Esse modo foi removido do `gera_dados.py` para simplificar o código; a validação está registrada no commit `88d92bc`.
 
 ## 2. Implementação MPI (`kmeans_mpi.py`): primitivas e buffers
 
@@ -90,8 +88,6 @@ Tempo do laço, média de 3 repetições. Sequencial puro em numpy: **68,10 s**,
 |---|---|---|
 | ![tempo](graficos/tempo_sint_600000.png) | ![speedup](graficos/speedup_sint_600000.png) | ![eficiência](graficos/eficiencia_sint_600000.png) |
 
-O `t_dist` do Spark varia de 2,1 s (p = 16) a 8,4 s (p = 1), contra ~0,4 s do MPI.
-
 **Interrompemos em 128, e a varredura além de 16 é só para registro:** como o enunciado permite, registramos os tempos de p = 32, 64 e 128 mesmo sem ganho.
 
 ## 7. As alterações de desempenho
@@ -99,14 +95,6 @@ O `t_dist` do Spark varia de 2,1 s (p = 16) a 8,4 s (p = 1), contra ~0,4 s do MP
 Cada alteração é uma opção do programa (o padrão é a versão base). Todas foram medidas na mesma configuração, com 3 repetições. Ganho = T(base) / T(alteração), no mesmo p.
 
 ![alterações](graficos/alteracoes_sint_600000.png)
-
-**Por que cada alteração mudou o tempo:**
-
-1. **add_at no sequencial e no MPI:** o `np.add.at` soma linha por linha, num laço interno do numpy, sem BLAS. Montando a matriz M (n × k), com M[i, j] = 1 se o ponto i está no cluster j, a soma de cada cluster vira um **produto de matrizes** (`M.T @ X`), que usa BLAS. O ganho cai com p = 16 porque cada processo tem menos linhas, e essa etapa pesa menos no total.
-2. **Com cache no Spark:** no PySpark, `cache()` guarda os blocos **serializados (pickle) na JVM**. A cada iteração, eles voltam pelo socket JVM → Python e são desserializados. Sem cache, `map(carrega_bloco)` e `mapPartitions(parcial)` rodam **encadeados no mesmo processo Python**, e o `.npy` vem do cache de arquivos do sistema operacional (já na RAM). Refazer a leitura sai mais barato do que trazer o cache da JVM.
-3. **One-hot no Spark:** a mesma troca da alteração 1, mas com um ganho bem maior.
-   - **Sem cache, o ganho do one-hot é de 5,6 s (p = 4) e 1,4 s (p = 16)**, da mesma ordem do ganho no MPI (1,3 s com p = 16).
-   - **A causa exata ficou em aberto.**
 
 **--comunicacao reduce_bcast no MPI** (2 `Reduce` + 1 `Bcast` no lugar de 2 `Allreduce`): **sem ganho**. Num único nó, as coletivas passam pela memória compartilhada. Uma coletiva a mais quase não pesa. Num cluster com rede, a diferença deveria aparecer.
 
@@ -118,9 +106,8 @@ Cada alteração é uma opção do programa (o padrão é a versão base). Todas
 - **Com oversubscription, o MPI piora:** o `t_comm` aumenta com p, porque o `Allreduce` espera processos que estão disputando o mesmo núcleo.
 
 **Overhead do Spark:**
-- Com 1 núcleo, o Spark é **4,9× mais lento** que o MPI fazendo **as mesmas contas numpy**. A diferença é toda overhead do caminho JVM ↔ Python a cada iteração: serialização do cache, agendamento de tarefas, broadcast e `treeAggregate`.
-- O Spark também **escala pior** (E16 = 55% contra 70%), e a razão Spark ÷ MPI cresce de 4,9× para 6,2×.
-- O `t_dist` do Spark é 5 a 20× o do MPI.
+- O Spark é **bem mais lento** que o MPI fazendo **as mesmas contas numpy**. A diferença é toda overhead do caminho JVM ↔ Python a cada iteração: serialização do cache, agendamento de tarefas, broadcast e `treeAggregate`.
+- O Spark também **escala pior**.
 
 **Complexidade do código:**
 
@@ -135,15 +122,15 @@ Os códigos das versões com MPI e com Spark possui tamanho parecido, cada vers�
 - **O MPI foi mais rápido e escalou melhor, à custa de mais trabalho explícito. O Spark esconde a distribuição, mas cobra em desempenho e em armadilhas menos visíveis.
 
 **Limitações:**
-- **Um único nó.** Toda a comunicação foi intra-nó, o que a torna mais barata do que num cluster com rede.
-- **Máquina compartilhada:** o cluster utilizado é da universidade, e é possível que outras pessoas tenham acessado-o durante os testes. A carga está registrada nos logs.
+- **Um único nó:** toda a comunicação foi intra-nó, o que a torna mais barata do que num cluster com rede.
+- **Máquina compartilhada:** é possível que outras pessoas tenham acessado-o durante os testes. A carga está registrada nos logs.
 
 ## Conclusão
 
 Para o K-Means com numpy em um nó com 16 núcleos:
-- **O MPI foi 4,9× a 6,2× mais rápido que o Spark** e chegou a um speedup de 11,3, contra 8,8.
+- **O MPI foi mais rápido que o Spark** e chegou a um speedup de aproximadamente 9,7 vezes, contra cerca de 3,8 vezes.
 - **A diferença vem do overhead do PySpark,** não das contas, que são idênticas: a passagem de dados entre JVM e Python a cada iteração pesa mais do que o próprio cálculo.
-- **As alterações mais eficazes atacaram justamente esses pontos:** o produto de matrizes no lugar do `np.add.at` (1,5× no MPI) e evitar o cache serializado no PySpark (3,6×).
+- **As alterações mais eficazes atacaram justamente esses pontos:** o produto de matrizes no lugar do `np.add.at` e evitar o cache serializado no PySpark.
 
 ## Como fazer um teste rápido a variável SMOKE
 
