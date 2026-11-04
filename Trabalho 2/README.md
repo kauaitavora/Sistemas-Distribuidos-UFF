@@ -1,6 +1,6 @@
 # Trabalho 2: K-Means Sequencial × Paralelo com MPI × Paralelo com Spark
 
-Comparação, seguindo a metodologia de Saxena et al. (2020), *Comparison of MPI and Spark for Data Science Applications*, de três implementações em **Python** do algoritmo de Lloyd para a técnica de agrupamento de dados K-Means: uma sequencial, uma paralela utilizando **MPI (mpi4py)** e uma paralela utilizando a API de **RDDs** do **Spark (PySpark)**.
+Comparação de três implementações em **Python** do algoritmo de Lloyd para a técnica de agrupamento de dados K-Means: uma sequencial, uma paralela utilizando **MPI (mpi4py)** e uma paralela utilizando a API de **RDDs** do **Spark (PySpark)**.
 
 **AVISO SOBRE USO DE IA:** Foram utilizados serviços de inteligência artificial para geração de código e do README e para pesquisa e solução de dúvidas.
 
