@@ -1,54 +1,54 @@
-=== 2026-10-20 15:57:51 rep=1 p=1 oversub=0 | carga: 0.00 0.00 0.00
+=== 2026-11-04 00:37:30 rep=1 p=1 oversub=0 | carga: 35.22 13.84 5.67
 mpiexec -n 1 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=1 N=600000 d=256 k=64 iter=20 | dist=0.406s total=69.433s comp=69.326s comm=0.002s | inércia final=88192.307179
+comunicacao=reduce_bcast somas=onehot
+p=1 N=600000 d=256 k=64 iter=20 | dist=0.404s total=45.627s comp=45.084s comm=0.002s | inércia final=88192.307179
 max |C_mpi - C_seq| = 0.00e+00
-RESULTADO,mpi,1,600000,256,64,20,0.406423,69.433299,69.325720,0.001692,88192.307179
-=== 2026-10-20 15:59:02 rep=1 p=4 oversub=0 | carga: 0.69 0.21 0.08
+RESULTADO,mpi,1,600000,256,64,20,0.404367,45.626776,45.083837,0.001956,88192.307179
+=== 2026-11-04 00:38:17 rep=1 p=4 oversub=0 | carga: 15.81 11.84 5.41
 mpiexec -n 4 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=4 N=600000 d=256 k=64 iter=20 | dist=0.386s total=17.948s comp=17.896s comm=0.889s | inércia final=88192.307179
-max |C_mpi - C_seq| = 1.44e-15
-RESULTADO,mpi,4,600000,256,64,20,0.386193,17.947651,17.895733,0.888867,88192.307179
-=== 2026-10-20 15:59:21 rep=1 p=16 oversub=0 | carga: 1.63 0.46 0.16
+comunicacao=reduce_bcast somas=onehot
+p=4 N=600000 d=256 k=64 iter=20 | dist=0.385s total=11.750s comp=11.590s comm=0.241s | inércia final=88192.307179
+max |C_mpi - C_seq| = 6.66e-16
+RESULTADO,mpi,4,600000,256,64,20,0.384664,11.750123,11.589668,0.240877,88192.307179
+=== 2026-11-04 00:38:30 rep=1 p=16 oversub=0 | carga: 14.00 11.58 5.40
 mpiexec -n 16 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=16 N=600000 d=256 k=64 iter=20 | dist=0.415s total=6.078s comp=6.009s comm=0.263s | inércia final=88192.307179
-max |C_mpi - C_seq| = 1.39e-15
-RESULTADO,mpi,16,600000,256,64,20,0.414885,6.077689,6.008607,0.262596,88192.307179
-=== 2026-10-20 15:59:29 rep=2 p=1 oversub=0 | carga: 2.56 0.70 0.24
+comunicacao=reduce_bcast somas=onehot
+p=16 N=600000 d=256 k=64 iter=20 | dist=0.416s total=4.679s comp=4.517s comm=0.107s | inércia final=88192.307179
+max |C_mpi - C_seq| = 6.66e-16
+RESULTADO,mpi,16,600000,256,64,20,0.415919,4.679137,4.516810,0.106955,88192.307179
+=== 2026-11-04 00:38:36 rep=2 p=1 oversub=0 | carga: 13.13 11.47 5.43
 mpiexec -n 1 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=1 N=600000 d=256 k=64 iter=20 | dist=0.405s total=66.911s comp=66.805s comm=0.002s | inércia final=88192.307179
+comunicacao=reduce_bcast somas=onehot
+p=1 N=600000 d=256 k=64 iter=20 | dist=0.403s total=45.645s comp=45.102s comm=0.002s | inércia final=88192.307179
 max |C_mpi - C_seq| = 0.00e+00
-RESULTADO,mpi,1,600000,256,64,20,0.404922,66.911362,66.805434,0.001816,88192.307179
-=== 2026-10-20 16:00:37 rep=2 p=4 oversub=0 | carga: 1.53 0.77 0.30
+RESULTADO,mpi,1,600000,256,64,20,0.403344,45.645313,45.101993,0.001926,88192.307179
+=== 2026-11-04 00:39:23 rep=2 p=4 oversub=0 | carga: 6.72 10.00 5.22
 mpiexec -n 4 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=4 N=600000 d=256 k=64 iter=20 | dist=0.387s total=22.419s comp=22.373s comm=5.149s | inércia final=88192.307179
-max |C_mpi - C_seq| = 1.44e-15
-RESULTADO,mpi,4,600000,256,64,20,0.386997,22.419418,22.373376,5.148561,88192.307179
-=== 2026-10-20 16:01:01 rep=2 p=16 oversub=0 | carga: 2.37 1.03 0.40
+comunicacao=reduce_bcast somas=onehot
+p=4 N=600000 d=256 k=64 iter=20 | dist=0.383s total=11.562s comp=11.389s comm=0.076s | inércia final=88192.307179
+max |C_mpi - C_seq| = 6.66e-16
+RESULTADO,mpi,4,600000,256,64,20,0.382917,11.561769,11.389244,0.076206,88192.307179
+=== 2026-11-04 00:39:36 rep=2 p=16 oversub=0 | carga: 6.12 9.71 5.20
 mpiexec -n 16 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=16 N=600000 d=256 k=64 iter=20 | dist=0.417s total=6.018s comp=5.950s comm=0.204s | inércia final=88192.307179
-max |C_mpi - C_seq| = 1.39e-15
-RESULTADO,mpi,16,600000,256,64,20,0.417254,6.018428,5.950055,0.204435,88192.307179
-=== 2026-10-20 16:01:08 rep=3 p=1 oversub=0 | carga: 3.46 1.27 0.48
+comunicacao=reduce_bcast somas=onehot
+p=16 N=600000 d=256 k=64 iter=20 | dist=0.416s total=4.681s comp=4.512s comm=0.108s | inércia final=88192.307179
+max |C_mpi - C_seq| = 6.66e-16
+RESULTADO,mpi,16,600000,256,64,20,0.416206,4.680879,4.511937,0.107905,88192.307179
+=== 2026-11-04 00:39:42 rep=3 p=1 oversub=0 | carga: 6.91 9.81 5.25
 mpiexec -n 1 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=1 N=600000 d=256 k=64 iter=20 | dist=0.404s total=68.360s comp=68.254s comm=0.002s | inércia final=88192.307179
+comunicacao=reduce_bcast somas=onehot
+p=1 N=600000 d=256 k=64 iter=20 | dist=0.404s total=45.461s comp=44.916s comm=0.002s | inércia final=88192.307179
 max |C_mpi - C_seq| = 0.00e+00
-RESULTADO,mpi,1,600000,256,64,20,0.403907,68.359797,68.253672,0.001824,88192.307179
-=== 2026-10-20 16:02:18 rep=3 p=4 oversub=0 | carga: 1.76 1.21 0.52
+RESULTADO,mpi,1,600000,256,64,20,0.404339,45.460908,44.916020,0.001960,88192.307179
+=== 2026-11-04 00:40:29 rep=3 p=4 oversub=0 | carga: 3.79 8.58 5.05
 mpiexec -n 4 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=4 N=600000 d=256 k=64 iter=20 | dist=0.386s total=17.859s comp=17.819s comm=0.832s | inércia final=88192.307179
-max |C_mpi - C_seq| = 1.44e-15
-RESULTADO,mpi,4,600000,256,64,20,0.385594,17.859150,17.819172,0.831610,88192.307179
-=== 2026-10-20 16:02:37 rep=3 p=16 oversub=0 | carga: 2.40 1.40 0.60
+comunicacao=reduce_bcast somas=onehot
+p=4 N=600000 d=256 k=64 iter=20 | dist=0.386s total=11.748s comp=11.588s comm=0.273s | inércia final=88192.307179
+max |C_mpi - C_seq| = 6.66e-16
+RESULTADO,mpi,4,600000,256,64,20,0.386256,11.747656,11.587589,0.272879,88192.307179
+=== 2026-11-04 00:40:42 rep=3 p=16 oversub=0 | carga: 3.83 8.35 5.03
 mpiexec -n 16 python kmeans_mpi.py --nome sint_600000 --comunicacao reduce_bcast
-comunicacao=reduce_bcast somas=add_at
-p=16 N=600000 d=256 k=64 iter=20 | dist=0.413s total=6.048s comp=5.979s comm=0.239s | inércia final=88192.307179
-max |C_mpi - C_seq| = 1.39e-15
-RESULTADO,mpi,16,600000,256,64,20,0.413409,6.048237,5.979496,0.238778,88192.307179
+comunicacao=reduce_bcast somas=onehot
+p=16 N=600000 d=256 k=64 iter=20 | dist=0.415s total=4.684s comp=4.527s comm=0.108s | inércia final=88192.307179
+max |C_mpi - C_seq| = 6.66e-16
+RESULTADO,mpi,16,600000,256,64,20,0.415424,4.684383,4.526893,0.107741,88192.307179
