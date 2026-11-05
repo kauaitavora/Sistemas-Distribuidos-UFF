@@ -7,6 +7,7 @@ import { GoogleMap } from '@capacitor/google-maps';
 import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import { onBeforeUnmount, onMounted, ref, useId } from 'vue';
+import { mqtt_motorista_connect, mqtt_motorista_publish } from '../mqtt_functions.ts';
 
 const mapElement = ref<HTMLElement | null>(null);
 const mapId = `busuff-map-${useId()}`;
@@ -53,6 +54,12 @@ onMounted(async () => {
       coordinate,
       zoom: 16,
     });
+
+    motorista = mqtt_motorista_connect("rota_1");
+    aluno = mqtt_aluno_connect();
+      
+    mqtt_motorista_publish(motorista, "rota_1", coordinate);
+    console.log(mqtt_aluno_receive(aluno).toString()); 
 
   } catch (error) {
     console.error('Não foi possível mostrar a localização do usuário:', error);
