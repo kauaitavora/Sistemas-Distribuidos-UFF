@@ -1,3 +1,4 @@
+import { Position } from '@capacitor/geolocation';
 import mqtt, { MqttClient } from 'mqtt'
 
 /* Lógica para receber e enviar eventos de localização utilizando MQTT.
@@ -6,8 +7,8 @@ import mqtt, { MqttClient } from 'mqtt'
    - Abre uma conexão com o broker MQTT, criando um cliente MQTT;
    - Inscreve o cliente em todas as rotas (que são tópicos MQTT);
    - Define que a função listener deve ser executada toda vez que um evento de
-     geolocalização chegar. A "rota" é o tópico do evento, e a "geolocation" é o
-     payload do evento.
+     geolocalização chegar. A "rota" é o tópico do evento, e a "position_json"
+     é o payload do evento.
    A função listener deve ser fornecida na instanciação de GeoEvents. Ela pode,
    por exemplo, ser uma função que atualiza um componente da UI com base na rota
    e na geolocalização.
@@ -18,7 +19,7 @@ export class GeoEvents {
     #cliente: MqttClient;
     #rota: string;
 
-    constructor(rota: string, listener: (rota: string, position: Buffer) => void) {
+    constructor(rota: string, listener: (rota: string, position_json: Buffer) => void) {
         this.#cliente = mqtt.connect(GeoEvents.#broker_address);
 
         this.#cliente.on("connect", () => {
@@ -38,6 +39,10 @@ export class GeoEvents {
 
     getRota() {
         return this.#rota;
+    }
+
+    sendPosition(position_json: string) {
+        this.#cliente.publish("rotas/".concat(this.#rota), position_json);
     }
 
     stop() {

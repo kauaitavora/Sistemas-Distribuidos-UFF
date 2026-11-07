@@ -27,8 +27,31 @@ onMounted(async () => {
     },
   });
 
+  function updatePosition(rota: string, position_json: Buffer) {
+
+    let position = JSON.parse(position_json.toString());
+
+    console.log(rota);
+    console.log(position);
+
+    const coordinate = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude,
+    };
+
+    map.addMarker({
+      coordinate,
+      title: rota,
+    });
+
+    map.setCamera({
+      coordinate,
+      zoom: 16,
+    });
+  }
+
   try {
-    
+    let geo_events_handler = new GeoEvents("rota1", updatePosition);
 
     if (Capacitor.isNativePlatform()) {
       await Geolocation.requestPermissions();
@@ -38,23 +61,10 @@ onMounted(async () => {
       enableHighAccuracy: true,
       timeout: 10000,
     });
+    
+    geo_events_handler.sendPosition(JSON.stringify(position));
 
     if (!mapElement.value?.isConnected) return;
-
-    const coordinate = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude,
-    };
-
-    await map.addMarker({
-      coordinate,
-      title: 'Você está aqui',
-    });
-
-    await map.setCamera({
-      coordinate,
-      zoom: 16,
-    });
 
   } catch (error) {
     console.error('Não foi possível mostrar a localização do usuário:', error);
