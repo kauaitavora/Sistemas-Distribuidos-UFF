@@ -28,6 +28,7 @@ onMounted(async () => {
   });
 
   try {
+    
 
     if (Capacitor.isNativePlatform()) {
       await Geolocation.requestPermissions();

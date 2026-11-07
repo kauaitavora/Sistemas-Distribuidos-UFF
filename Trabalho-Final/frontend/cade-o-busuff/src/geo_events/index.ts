@@ -40,7 +40,7 @@ export class GeoEvents {
         return this.#rota;
     }
 
-    close() {
+    stop() {
         this.#cliente.end();
     }
 }
