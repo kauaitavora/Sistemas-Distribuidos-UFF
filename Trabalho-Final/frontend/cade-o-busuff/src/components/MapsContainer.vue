@@ -11,13 +11,13 @@ import { GeoEvents } from '../geo_events';
 
 const mapElement = ref<HTMLElement | null>(null);
 const mapId = `busuff-map-${useId()}`;
-let map: GoogleMap | undefined;
+let map: GoogleMap;
 
 onMounted(async () => {
 
   if (!mapElement.value) return;
 
-  const map = await GoogleMap.create({
+  map = await GoogleMap.create({
     id: mapId,
     element: mapElement.value,
     apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY ?? '',
@@ -28,6 +28,7 @@ onMounted(async () => {
   });
 
   function updatePosition(rota: string, position_json: Buffer) {
+    if (!mapElement.value?.isConnected) return;
 
     let position = JSON.parse(position_json.toString());
 
@@ -63,8 +64,6 @@ onMounted(async () => {
     });
     
     geo_events_handler.sendPosition(JSON.stringify(position));
-
-    if (!mapElement.value?.isConnected) return;
 
   } catch (error) {
     console.error('Não foi possível mostrar a localização do usuário:', error);
