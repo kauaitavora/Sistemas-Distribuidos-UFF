@@ -39,4 +39,8 @@ export class GeoEvents {
     getRota() {
         return this.#rota;
     }
+
+    close() {
+        this.#cliente.end();
+    }
 }

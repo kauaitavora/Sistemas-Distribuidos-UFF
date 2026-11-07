@@ -33,7 +33,7 @@ onMounted(async () => {
       await Geolocation.requestPermissions();
     }
 
-    const { coords } = await Geolocation.getCurrentPosition({
+    const position = await Geolocation.getCurrentPosition({
       enableHighAccuracy: true,
       timeout: 10000,
     });
@@ -41,8 +41,8 @@ onMounted(async () => {
     if (!mapElement.value?.isConnected) return;
 
     const coordinate = {
-      lat: coords.latitude,
-      lng: coords.longitude,
+      lat: position.coords.latitude,
+      lng: position.coords.longitude,
     };
 
     await map.addMarker({
