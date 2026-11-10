@@ -14,7 +14,7 @@ const mapId = `busuff-map-${useId()}`;
 const interval = 1000;
 
 let map: GoogleMap;
-let interval_ID;
+let interval_ID: number;
 
 async function sendCurrPosition(geo_events: GeoEvents) {
   const position = await Geolocation.getCurrentPosition({
@@ -39,7 +39,7 @@ onMounted(async () => {
     },
   });
 
-  let marker_ID;
+  let marker_ID: string;
 
   async function updateMarkerPosition(rota: string, position_json: Buffer) {
     if (!mapElement.value?.isConnected) return;
@@ -69,7 +69,7 @@ onMounted(async () => {
       await Geolocation.requestPermissions();
     }
 
-    interval_ID = setInterval(sendCurrPosition, interval, geo_events_handler);
+    interval_ID = window.setInterval(sendCurrPosition, interval, geo_events_handler);
     
   } catch (error) {
     console.error('Não foi possível mostrar a localização do usuário:', error);
@@ -78,7 +78,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(async () => {
-  clearInterval(interval_ID);
+  window.clearInterval(interval_ID);
   const instance = await map;
   await instance?.destroy();
 });
