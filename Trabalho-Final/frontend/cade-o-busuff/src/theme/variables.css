@@ -1,0 +1,10 @@
+/* For information on how to create your own theme, please refer to:
+http://ionicframework.com/docs/theming/ */
+
+/* Android renders the native Google Map underneath the WebView. */
+html.plt-android.plt-hybrid,
+html.plt-android.plt-hybrid body,
+html.plt-android.plt-hybrid #app,
+html.plt-android.plt-hybrid ion-app {
+  background: transparent;
+}
