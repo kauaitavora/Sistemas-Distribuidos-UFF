@@ -1,0 +1,8 @@
+# ORM: representa as tabelas do PostgreSQL como classes Python
+SQLAlchemy==2.0.44
+
+# Driver que conecta o Python ao PostgreSQL; a versão "binary" já vem pronta para Windows 
+psycopg2-binary==2.9.11
+
+# Lê o arquivo .env e carrega as variáveis de ambiente (necessário porque não usamos Docker no desenvolvimento)
+python-dotenv==1.0.1

@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Variáveis de ambiente com senhas: só o .env.example é versionado
+.env
