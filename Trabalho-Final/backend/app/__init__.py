@@ -1,0 +1,1 @@
+# Marca a pasta "app" como um pacote Python, para podermos importar app.core, app.models etc.
