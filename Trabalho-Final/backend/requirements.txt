@@ -9,3 +9,10 @@ python-dotenv==1.0.1
 
 # Cliente MQTT para Python, usado com a API de callbacks VERSION2
 paho-mqtt==2.1.0
+
+# API REST; versões fixadas 
+fastapi==0.165.0
+# Servidor que executa a API
+uvicorn==0.54.0
+# Formato das respostas da API (vem com o FastAPI)
+pydantic==2.14.4

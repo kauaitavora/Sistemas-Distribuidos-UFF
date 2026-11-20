@@ -61,6 +61,18 @@ def testar_conexao() -> None:
     print(versao)
 
 
+def get_db():
+    """
+    Fornece uma sessão do banco para cada requisição da API (usada pelo FastAPI com Depends).
+    A sessão é fechada ao final da requisição, mesmo que ocorra um erro.
+    """
+    sessao = SessionLocal()
+    try:
+        yield sessao
+    finally:
+        sessao.close()
+
+
 # Permite testar a conexão rodando este arquivo diretamente:
 #   python -m app.core.database
 if __name__ == "__main__":
