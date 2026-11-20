@@ -6,3 +6,6 @@ psycopg2-binary==2.9.11
 
 # Lê o arquivo .env e carrega as variáveis de ambiente (necessário porque não usamos Docker no desenvolvimento)
 python-dotenv==1.0.1
+
+# Cliente MQTT para Python, usado com a API de callbacks VERSION2
+paho-mqtt==2.1.0
