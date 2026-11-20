@@ -1,9 +1,9 @@
 """
 Assinante MQTT do backend: processo separado da API.
 
-Conecta ao broker por TCP (porta 1883), assina as posições dos ônibus e,
-por enquanto, apenas mostra cada mensagem recebida. A validação e a gravação
-no banco entram nos próximos passos.
+Conecta ao broker por TCP (porta 1883), assina as posições dos ônibus e
+valida cada mensagem recebida (app/mqtt/validacao.py). Por enquanto, apenas
+mostra o resultado; a gravação no banco entra no próximo passo.
 """
 
 import os
@@ -12,6 +12,8 @@ from pathlib import Path
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 from paho.mqtt.enums import CallbackAPIVersion
+
+from app.mqtt.validacao import MensagemInvalida, validar_posicao
 
 # Carrega o .env da pasta backend (duas pastas acima: mqtt -> app -> backend).
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
@@ -48,15 +50,22 @@ def ao_conectar(cliente, userdata, flags, reason_code, properties):
 
 def ao_receber(cliente, userdata, mensagem):
     """Chamada pelo paho a cada mensagem recebida em um tópico assinado."""
-    conteudo = mensagem.payload.decode("utf-8", errors="replace")
-    print(f"[{mensagem.topic}] {conteudo}")
+    try:
+        posicao = validar_posicao(mensagem.topic, mensagem.payload)
+    except MensagemInvalida as erro:
+        # Mensagem fora do contrato: é descartada e registrada, e o assinante segue.
+        print(f"[DESCARTADA] {mensagem.topic}: {erro}")
+        return
+    except Exception as erro:
+        # Rede de segurança: no paho, um erro não tratado aqui dentro derruba o
+        # loop_forever e o assinante para. Uma mensagem ruim não pode derrubar o serviço.
+        print(f"[ERRO INESPERADO] {mensagem.topic}: {erro!r}")
+        return
+    print(f"[OK] {posicao}")
 
 
 def main() -> None:
-    # O paho-mqtt 2.x exige escolher a versão da API de callbacks. Usamos a VERSION2.
-    # O MQTT.pdf e o cliente-LWT.py usam a API antiga (1.x), em que o on_connect
-    # recebe (client, userdata, flags, rc); na VERSION2 ele recebe também
-    # reason_code e properties.
+    # O paho-mqtt 2.x exige escolher a versão da API de callbacks. Fou usada a VERSION2.
     cliente = mqtt.Client(
         callback_api_version=CallbackAPIVersion.VERSION2,
         client_id=CLIENT_ID,
@@ -66,7 +75,7 @@ def main() -> None:
     cliente.on_message = ao_receber
 
     try:
-        # keepalive=60, como no MQTT.pdf: sem tráfego por 60 s, o cliente manda um "ping".
+        # keepalive=60: sem tráfego por 60 s, o cliente manda um "ping".
         cliente.connect(MQTT_HOST, MQTT_PORT, keepalive=60)
     except ConnectionRefusedError:
         print(f"Não foi possível conectar em {MQTT_HOST}:{MQTT_PORT}. O HiveMQ está rodando?")
