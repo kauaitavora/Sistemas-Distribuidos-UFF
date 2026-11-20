@@ -1,9 +1,9 @@
 """
 Assinante MQTT do backend: processo separado da API.
 
-Conecta ao broker por TCP (porta 1883), assina as posições dos ônibus e
-valida cada mensagem recebida (app/mqtt/validacao.py). Por enquanto, apenas
-mostra o resultado; a gravação no banco entra no próximo passo.
+Conecta ao broker por TCP (porta 1883), assina as posições dos ônibus,
+valida cada mensagem (app/mqtt/validacao.py) e grava as válidas no
+PostgreSQL (app/mqtt/gravacao.py).
 """
 
 import os
@@ -13,6 +13,7 @@ import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 from paho.mqtt.enums import CallbackAPIVersion
 
+from app.mqtt.gravacao import gravar_posicao
 from app.mqtt.validacao import MensagemInvalida, validar_posicao
 
 # Carrega o .env da pasta backend (duas pastas acima: mqtt -> app -> backend).
@@ -49,11 +50,12 @@ def ao_conectar(cliente, userdata, flags, reason_code, properties):
 
 
 def ao_receber(cliente, userdata, mensagem):
-    """Chamada pelo paho a cada mensagem recebida em um tópico assinado."""
+    """Chamada pelo paho a cada mensagem recebida: valida e grava no banco."""
     try:
         posicao = validar_posicao(mensagem.topic, mensagem.payload)
+        gravou = gravar_posicao(posicao)
     except MensagemInvalida as erro:
-        # Mensagem fora do contrato: é descartada e registrada, e o assinante segue.
+        # Mensagem fora do contrato (inclusive rota inexistente): descartada e registrada.
         print(f"[DESCARTADA] {mensagem.topic}: {erro}")
         return
     except Exception as erro:
@@ -61,11 +63,19 @@ def ao_receber(cliente, userdata, mensagem):
         # loop_forever e o assinante para. Uma mensagem ruim não pode derrubar o serviço.
         print(f"[ERRO INESPERADO] {mensagem.topic}: {erro!r}")
         return
-    print(f"[OK] {posicao}")
+
+    if gravou:
+        print(
+            f"[GRAVADA] {posicao.veiculo_id} na {posicao.rota_id}: "
+            f"({posicao.lat}, {posicao.lng}) às {posicao.timestamp:%H:%M:%S} UTC"
+        )
+    else:
+        # Cópia repetida (QoS 1): o banco já tinha esta posição e a ignorou.
+        print(f"[DUPLICADA] {posicao.veiculo_id} às {posicao.timestamp:%H:%M:%S} UTC: ignorada")
 
 
 def main() -> None:
-    # O paho-mqtt 2.x exige escolher a versão da API de callbacks. Fou usada a VERSION2.
+    # O paho-mqtt 2.x exige escolher a versão da API de callbacks. Foi usada a VERSION2.
     cliente = mqtt.Client(
         callback_api_version=CallbackAPIVersion.VERSION2,
         client_id=CLIENT_ID,

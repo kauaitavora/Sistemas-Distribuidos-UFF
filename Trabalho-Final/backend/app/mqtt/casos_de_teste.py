@@ -1,7 +1,5 @@
-# Trabalho-Final/backend/app/mqtt/casos_de_teste.py
 """
-Publica mensagens de teste, válidas e inválidas, para conferir a validação do assinante. Demonstrar 
-a tolerância a mensagens ruins.
+Publica mensagens de teste, válidas e inválidas, para conferir a validação do assinante.
 """
 
 import json
@@ -39,7 +37,8 @@ def montar_casos() -> list[tuple[str, str, str, str]]:
     agora = int(time.time() * 1000)
     topico = "rotas/rota-1/onibus-01"
     return [
-        ("válida", topico, json.dumps(posicao(agora)), "[OK]"),
+        # --- Validação ---
+        ("válida", topico, json.dumps(posicao(agora)), "[GRAVADA]"),
         ("JSON quebrado", topico, '{"timestamp": 123, "coords": ', "[DESCARTADA]"),
         ("sem coords", topico, json.dumps({"timestamp": agora}), "[DESCARTADA]"),
         ("latitude fora da faixa", topico, json.dumps(posicao(agora, lat=200)), "[DESCARTADA]"),
@@ -49,13 +48,35 @@ def montar_casos() -> list[tuple[str, str, str, str]]:
             "horario_id com tipo errado",
             topico,
             json.dumps({**posicao(agora + 1000), "horario_id": "sete"}),
-            "[OK] com horario_id=None",
+            "[GRAVADA] sem horário",
         ),
         (
             "tópico no formato antigo",
             "rotas/rota-1",
             json.dumps(posicao(agora)),
             "nada (o filtro rotas/+/+ não entrega)",
+        ),
+        # --- Regras do banco ---
+        ("duplicada: 1ª cópia", topico, json.dumps(posicao(agora + 2000)), "[GRAVADA]"),
+        ("duplicada: 2ª cópia (mesmo timestamp)", topico, json.dumps(posicao(agora + 2000)), "[DUPLICADA]"),
+        (
+            "ônibus desconhecido",
+            "rotas/rota-1/onibus-99",
+            json.dumps(posicao(agora)),
+            "[GRAVADA] (onibus-99 cadastrado)",
+        ),
+        ("rota inexistente", "rotas/rota-9/onibus-01", json.dumps(posicao(agora + 3000)), "[DESCARTADA]"),
+        (
+            "horário de outra rota (id 4 é da rota-2)",
+            topico,
+            json.dumps({**posicao(agora + 4000), "horario_id": 4}),
+            "[AVISO] e depois [GRAVADA]",
+        ),
+        (
+            "horário válido (id 1 é da rota-1)",
+            topico,
+            json.dumps({**posicao(agora + 5000), "horario_id": 1}),
+            "[GRAVADA] com horário",
         ),
     ]
 

@@ -2,8 +2,8 @@
 Tabelas do banco de dados, descritas como classes Python (modelos do SQLAlchemy).
 
 Cada classe vira uma tabela, e cada atributo vira uma coluna:
-- Rota: rotas pré-fixadas do BusUFF (dados de exemplo, por enquanto);
-- Horario: horários de saída de cada rota (opcionais no contrato);
+- Rota: rotas pré-fixadas do BusUFF (dados de exemplo);
+- Horario: horários de saída de cada rota (opcionais);
 - Veiculo: ônibus conhecidos pelo backend e seu estado online/offline (LWT);
 - Posicao: cada posição GPS recebida pelo assinante MQTT.
 """
@@ -30,7 +30,7 @@ class Rota(Base):
 
     __tablename__ = "rota"
 
-    # Id em texto (ex.: "rota-1"), no formato definido no CONTRATO.md.
+    # Id em texto (ex.: "rota-1").
     id: Mapped[str] = mapped_column(String(32), primary_key=True)
     nome: Mapped[str] = mapped_column(String(100))
     origem: Mapped[str] = mapped_column(String(100))

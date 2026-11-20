@@ -13,7 +13,7 @@ from app.core.database import SessionLocal
 from app.init_db import criar_tabelas
 from app.models import Horario, Rota, Veiculo
 
-# Rotas de exemplo. O "id" segue o formato do contrato e vai no tópico MQTT.
+# Rotas de exemplo. O "id" vai no tópico MQTT.
 ROTAS = [
     {"id": "rota-1", "nome": "Rota 1", "origem": "Campus", "destino": "Centro"},
     {"id": "rota-2", "nome": "Rota 2", "origem": "Campus", "destino": "Rodoviária"},
@@ -60,7 +60,7 @@ def popular_banco() -> None:
             .on_conflict_do_nothing(index_elements=["rota_id", "hora_saida"])
         )
 
-    # Mostra quantas linhas cada tabela tem agora (o número deve ser o mesmo a cada execução).
+    # Mostra quantas linhas cada tabela tem agora.
     with SessionLocal() as sessao:
         for modelo in (Rota, Horario, Veiculo):
             total = sessao.scalar(select(func.count()).select_from(modelo))
