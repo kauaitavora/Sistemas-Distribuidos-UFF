@@ -75,22 +75,22 @@ onMounted(async () => {
 
     const mapController = new MapControler(map);
 
-    const events = new GeoEvents('rota1', async (rota, payload) => {
+    const events = new GeoEvents('rota-01', 'onibus-01', async (rota, payload) => {
 
-        if (!mapElement.value?.isConnected) return;
+      if (!mapElement.value?.isConnected) return;
 
-	try {
-            const position: Position = JSON.parse(payload.toString());
-            await mapController.updateMarkerPosition(rota, position);
-	} catch (error) {
-            console.error('Failed to update marker:', error);
-	}
+      try {
+        const position: Position = JSON.parse(payload.toString());
+        await mapController.updateMarkerPosition(rota, position);
+      } catch (error) {
+        console.error('Failed to update marker:', error);
+      }
     });
       
     geoEvents = events;
 
     interval_ID = window.setInterval(() => {
-	void sendCurrPosition(events);
+	    void sendCurrPosition(events);
     }, interval);
 
   } catch (error) {
