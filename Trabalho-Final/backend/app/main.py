@@ -14,7 +14,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 # Importar as rotas também importa app.core.database, que carrega o .env.
-from app.api import rotas
+from app.api import rotas, veiculos
 
 app = FastAPI(
     title="Cadê o BusUFF? — API",
@@ -36,6 +36,7 @@ app.add_middleware(
 
 # Registra os grupos de endereços da API.
 app.include_router(rotas.router)
+app.include_router(veiculos.router)
 
 
 @app.get("/", tags=["status"])

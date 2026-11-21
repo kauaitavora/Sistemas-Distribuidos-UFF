@@ -40,7 +40,14 @@ DATABASE_URL = URL.create(
 # O "engine" administra as conexões com o banco.
 # pool_pre_ping=True testa cada conexão antes de usá-la: se o banco reiniciou,
 # a conexão morta é descartada em vez de causar erro.
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+# connect_args: cada conexão do backend usa o fuso UTC. Assim, as datas lidas do banco
+# (e devolvidas pela API) vêm sempre em UTC, em qualquer máquina, sem depender do
+# fuso configurado no PostgreSQL (está em -03).
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    connect_args={"options": "-c timezone=utc"},
+)
 
 # Fábrica de sessões: cada sessão é uma "conversa" com o banco.
 # As alterações só são gravadas de fato quando a sessão faz commit.

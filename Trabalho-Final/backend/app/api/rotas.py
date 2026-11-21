@@ -1,13 +1,15 @@
 # Trabalho-Final/backend/app/api/rotas.py
 """Endereços da API ligados às rotas de ônibus."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime, timedelta, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.models import Horario, Rota
-from app.schemas import HorarioOut, RotaOut
+from app.models import Horario, Posicao, Rota
+from app.schemas import HorarioOut, PosicaoOut, RotaOut
 
 # Todos os endereços deste arquivo começam com /rotas.
 router = APIRouter(prefix="/rotas", tags=["rotas"])
@@ -26,4 +28,31 @@ def listar_horarios(rota_id: str, db: Session = Depends(get_db)):
         # 404 = "não encontrado": a rota pedida não existe.
         raise HTTPException(status_code=404, detail=f"Rota não encontrada: {rota_id}")
     consulta = select(Horario).where(Horario.rota_id == rota_id).order_by(Horario.hora_saida)
+    return db.scalars(consulta).all()
+
+
+@router.get("/{rota_id}/posicoes/ultima", response_model=list[PosicaoOut])
+def ultima_posicao_por_onibus(
+    rota_id: str,
+    minutos: int = Query(10, ge=1, le=1440, description="Janela de tempo, em minutos"),
+    db: Session = Depends(get_db),
+):
+    """
+    Última posição de cada ônibus da rota, considerando só os últimos `minutos`.
+
+    Serve para quem abre o mapa entre duas mensagens MQTT: o pub/sub só entrega
+    a quem já estava assinando, então o estado atual vem do banco.
+    """
+    if db.get(Rota, rota_id) is None:
+        raise HTTPException(status_code=404, detail=f"Rota não encontrada: {rota_id}")
+
+    limite = datetime.now(timezone.utc) - timedelta(minutes=minutos)
+    # DISTINCT ON (recurso do PostgreSQL): para cada veiculo_id, fica só a primeira
+    # linha na ordem pedida, ou seja, a de timestamp mais recente.
+    consulta = (
+        select(Posicao)
+        .where(Posicao.rota_id == rota_id, Posicao.timestamp >= limite)
+        .order_by(Posicao.veiculo_id, Posicao.timestamp.desc())
+        .distinct(Posicao.veiculo_id)
+    )
     return db.scalars(consulta).all()
