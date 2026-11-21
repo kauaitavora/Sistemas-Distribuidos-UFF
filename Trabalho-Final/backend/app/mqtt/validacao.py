@@ -134,3 +134,26 @@ def validar_posicao(topico: str, conteudo: bytes) -> PosicaoRecebida:
         direcao_graus=_opcional(coords.get("heading"), 0, 360),
         horario_id=horario_id,
     )
+
+
+def validar_status(topico: str, conteudo: bytes) -> tuple[str, bool]:
+    """
+    Valida uma mensagem de status/<veiculo_id>, inclusive o LWT.
+    Devolve (veiculo_id, online). O ônibus vem do tópico, como nas posições.
+    """
+    partes = topico.split("/")
+    if len(partes) != 2 or partes[0] != "status":
+        raise MensagemInvalida(f"tópico fora do formato status/<veiculo_id>: {topico}")
+    veiculo_id = partes[1]
+    if not PADRAO_ID.fullmatch(veiculo_id):
+        raise MensagemInvalida(f"veiculo_id inválido no tópico: {veiculo_id!r}")
+
+    try:
+        dados = json.loads(conteudo.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as erro:
+        raise MensagemInvalida(f"conteúdo não é um JSON válido ({erro})") from erro
+
+    estado = dados.get("estado") if isinstance(dados, dict) else None
+    if estado not in ("online", "offline"):
+        raise MensagemInvalida(f'estado deve ser "online" ou "offline": {estado!r}')
+    return veiculo_id, estado == "online"

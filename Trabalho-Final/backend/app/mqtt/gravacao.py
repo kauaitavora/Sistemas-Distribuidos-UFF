@@ -76,3 +76,27 @@ def gravar_posicao(posicao: PosicaoRecebida) -> bool:
 
     # Saindo do "with", a transação recebe o commit.
     return id_gravado is not None
+
+
+def gravar_status(veiculo_id: str, online: bool) -> bool:
+    """
+    Atualiza o estado online/offline de um ônibus (tópico status/<veiculo_id>, inclusive o LWT).
+    Cadastra o ônibus se for novo. Devolve True se o estado mudou.
+    """
+    agora = datetime.now(timezone.utc)
+    with SessionLocal.begin() as sessao:
+        # INSERT ... ON CONFLICT DO UPDATE ... WHERE online IS DISTINCT FROM <novo estado>:
+        # só escreve quando o estado muda. Mensagens repetidas (QoS 1) ou retidas (retain)
+        # não alteram nada, ou seja, a operação é idempotente.
+        # O RETURNING devolve uma linha só quando houve inserção ou mudança.
+        id_alterado = sessao.execute(
+            insert(Veiculo)
+            .values(id=veiculo_id, online=online, status_em=agora)
+            .on_conflict_do_update(
+                index_elements=["id"],
+                set_={"online": online, "status_em": agora},
+                where=Veiculo.online.is_distinct_from(online),
+            )
+            .returning(Veiculo.id)
+        ).scalar_one_or_none()
+    return id_alterado is not None
