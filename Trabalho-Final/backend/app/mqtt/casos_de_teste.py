@@ -78,6 +78,25 @@ def montar_casos() -> list[tuple[str, str, str, str]]:
             json.dumps({**posicao(agora + 5000), "horario_id": 1}),
             "[GRAVADA] com horário",
         ),
+        # --- Idempotência do estado do ônibus ---
+        (
+            "posição nova do onibus-03",
+            "rotas/rota-3/onibus-03",
+            json.dumps(posicao(agora + 6000)),
+            "[GRAVADA] (onibus-03 fica online)",
+        ),
+        (
+            "status offline do onibus-03 (como um LWT)",
+            "status/onibus-03",
+            json.dumps({"veiculo_id": "onibus-03", "estado": "offline"}),
+            "[STATUS] onibus-03 agora está offline",
+        ),
+        (
+            "mesma posição repetida (reentrega do QoS 1)",
+            "rotas/rota-3/onibus-03",
+            json.dumps(posicao(agora + 6000)),
+            "[DUPLICADA], e o onibus-03 deve continuar offline",
+        ),
     ]
 
 

@@ -11,6 +11,7 @@ Regras que dependem do banco:
 
 from datetime import datetime, timezone
 
+from sqlalchemy import update
 from sqlalchemy.dialects.postgresql import insert
 
 from app.core.database import SessionLocal
@@ -24,26 +25,20 @@ def gravar_posicao(posicao: PosicaoRecebida) -> bool:
     Devolve True se gravou e False se a posição era duplicada.
     Levanta MensagemInvalida se a rota não existir.
     """
+    agora = datetime.now(timezone.utc)
     with SessionLocal.begin() as sessao:
         # 1) As rotas são pré-fixadas: posição de rota desconhecida é recusada.
         #    (O erro desfaz a transação inteira: nada é gravado.)
         if sessao.get(Rota, posicao.rota_id) is None:
             raise MensagemInvalida(f"rota inexistente: {posicao.rota_id}")
 
-        # 2) Ônibus: cadastra se for novo; se estava offline, a posição o reativa.
-        #    INSERT ... ON CONFLICT DO UPDATE ... WHERE online = false:
-        #    - ônibus novo: é inserido já online;
-        #    - ônibus offline: passa a online, e status_em registra a mudança;
-        #    - ônibus já online: nada muda (evita uma escrita a cada segundo).
-        agora = datetime.now(timezone.utc)
+        # 2) Ônibus novo: cadastra já como online. Se já existe, nada muda AQUI;
+        #    reativar um ônibus offline fica para o passo 5, depois de sabermos
+        #    se a posição é nova ou repetida.
         sessao.execute(
             insert(Veiculo)
             .values(id=posicao.veiculo_id, online=True, status_em=agora)
-            .on_conflict_do_update(
-                index_elements=["id"],
-                set_={"online": True, "status_em": agora},
-                where=Veiculo.online.is_(False),
-            )
+            .on_conflict_do_nothing(index_elements=["id"])
         )
 
         # 3) Horário opcional: se não existir ou for de outra rota, é ignorado.
@@ -73,6 +68,18 @@ def gravar_posicao(posicao: PosicaoRecebida) -> bool:
             .on_conflict_do_nothing(index_elements=["veiculo_id", "timestamp"])
             .returning(Posicao.id)
         ).scalar_one_or_none()
+
+        # 5) Só uma posição NOVA reativa um ônibus offline. Uma cópia repetida é
+        #    uma mensagem antiga (reentrega do QoS 1, sessão persistente ou buffer
+        #    da nova líder) e não pode desfazer um "offline" mais recente, como o
+        #    LWT de um celular que caiu. Assim, receber a mesma posição duas vezes
+        #    tem exatamente o mesmo efeito que recebê-la uma vez (idempotência).
+        if id_gravado is not None:
+            sessao.execute(
+                update(Veiculo)
+                .where(Veiculo.id == posicao.veiculo_id, Veiculo.online.is_(False))
+                .values(online=True, status_em=agora)
+            )
 
     # Saindo do "with", a transação recebe o commit.
     return id_gravado is not None

@@ -177,7 +177,11 @@ class Eleicao:
             self.lider = self.meu_id
             self.em_eleicao = False
             self.rodada += 1
-            pendentes = list(self.buffer)
+            # Só o que chegou dentro da janela: se ficou muito tempo sem chegar
+            # mensagem nova, o buffer ainda pode ter mensagens antigas
+            # (a limpeza em deve_processar só roda quando chega mensagem).
+            limite = time.monotonic() - JANELA_BUFFER
+            pendentes = [item for item in self.buffer if item[0] >= limite]
             self.buffer.clear()
         self.cliente.publish(TOPICO_COORDENADOR, json.dumps({"lider": self.meu_id}), qos=1)
         print(f"[ELEIÇÃO] réplica {self.meu_id} é a nova LÍDER; gravando {len(pendentes)} mensagem(ns) do buffer")
