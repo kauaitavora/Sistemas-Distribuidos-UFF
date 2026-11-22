@@ -1,4 +1,8 @@
-apply plugin: 'com.android.application'
+// https://developers.google.com/maps/documentation/android-sdk/
+plugins {
+    id 'com.android.application'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin' version '2.0.1'
+}
 
 secrets {
     propertiesFileName = 'secrets.properties'
