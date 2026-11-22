@@ -19,6 +19,12 @@ let geoEvents: GeoEvents | undefined;
 let interval_ID: number;
 let sending = false;
 
+const props = defineProps<{
+     role: 'driver' | 'student';
+     routeId: string;
+}>();
+
+ 
 function getCurrPosition() {
   return Geolocation.getCurrentPosition({
     enableHighAccuracy: true,
@@ -75,13 +81,13 @@ onMounted(async () => {
 
     const mapController = new MapControler(map);
 
-    const events = new GeoEvents('rota1', async (rota, payload) => {
-
+    const events = new GeoEvents(props.routeId, async (topic, payload) => {
+	if (topic !== `rotas/${props.routeId}`) return;
         if (!mapElement.value?.isConnected) return;
 
 	try {
             const position: Position = JSON.parse(payload.toString());
-            await mapController.updateMarkerPosition(rota, position);
+            await mapController.updateMarkerPosition(props.routeId, position);
 	} catch (error) {
             console.error('Failed to update marker:', error);
 	}
@@ -89,9 +95,11 @@ onMounted(async () => {
       
     geoEvents = events;
 
-    interval_ID = window.setInterval(() => {
-	void sendCurrPosition(events);
-    }, interval);
+    if (props.role === 'driver') {
+        interval_ID = window.setInterval(() => {
+ 	    void sendCurrPosition(events);
+        }, interval); 
+    }
 
   } catch (error) {
     console.error('Não foi possível mostrar a localização do usuário:', error);
