@@ -125,6 +125,7 @@ def tratar_status(mensagem):
 
 
 def main() -> None:
+    """Lê as opções (--replica, --total), conecta ao broker e roda até o Ctrl+C."""
     global eleicao
 
     # Argumentos opcionais: sem --replica, o assinante funciona como antes (sempre grava).

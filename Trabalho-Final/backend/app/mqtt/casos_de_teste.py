@@ -101,6 +101,7 @@ def montar_casos() -> list[tuple[str, str, str, str]]:
 
 
 def main() -> None:
+    """Publica cada caso de teste e mostra o que o assinante deve exibir."""
     cliente = mqtt.Client(callback_api_version=CallbackAPIVersion.VERSION2)
     cliente.connect(MQTT_HOST, MQTT_PORT, keepalive=60)
     cliente.loop_start()  # thread de rede, necessária para receber o PUBACK do QoS 1

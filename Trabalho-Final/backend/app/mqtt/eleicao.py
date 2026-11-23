@@ -56,6 +56,8 @@ class Eleicao:
     """Estado e regras do valentão para uma réplica do assinante."""
 
     def __init__(self, cliente, meu_id: int, total: int, processar):
+        """Guarda o cliente MQTT, o número desta réplica, o total de réplicas e a função 
+        que grava as mensagens."""
         self.cliente = cliente      # cliente MQTT da réplica (usado para publicar)
         self.meu_id = meu_id        # número desta réplica (1 a total)
         self.total = total          # o valentão exige saber quais ids existem
@@ -95,6 +97,7 @@ class Eleicao:
         return self.cliente.publish(topico_saida(self.meu_id), CONTEUDO_SAIDA, qos=1)
 
     def sou_lider(self) -> bool:
+        """True se esta réplica é a líder atual (consulta protegida pela trava)."""
         with self.trava:
             return self.lider == self.meu_id
 
@@ -150,6 +153,8 @@ class Eleicao:
         threading.Timer(T_OK, self._fim_espera_ok, args=(rodada,)).start()
 
     def _fim_espera_ok(self, rodada: int) -> None:
+        """Fim do tempo limite T_OK: sem OK, esta réplica vence; com OK, passa a esperar 
+        o anúncio do vencedor."""
         with self.trava:
             if rodada != self.rodada or not self.em_eleicao:
                 return  # rodada antiga: algo já mudou
@@ -165,6 +170,8 @@ class Eleicao:
             self._virar_lider()
 
     def _fim_espera_coordenador(self, rodada: int) -> None:
+        """Fim do tempo limite T_COORDENADOR: se o vencedor não se anunciou (pode ter caído), 
+        recomeça a eleição."""
         with self.trava:
             if rodada != self.rodada or not self.em_eleicao:
                 return  # o anúncio chegou a tempo
@@ -191,6 +198,8 @@ class Eleicao:
             self.processar(mensagem)
 
     def _ao_receber_na_caixa(self, dados: dict) -> None:
+        """Trata ELEIÇÃO (de uma réplica menor: responde OK e disputa no lugar dela) e 
+        OK (uma réplica maior está viva)."""
         tipo, de = dados.get("tipo"), dados.get("de")
         if not isinstance(de, int):
             raise ValueError(f"campo 'de' inválido: {de!r}")
@@ -207,6 +216,8 @@ class Eleicao:
             print(f"[ELEIÇÃO] réplica {self.meu_id} recebeu OK de {de}")
 
     def _ao_receber_coordenador(self, dados: dict) -> None:
+        """Trata o anúncio do vencedor: aceita se ele for maior; se for menor, inicia 
+        nova eleição (valentão)."""
         novo = dados.get("lider")
         if not isinstance(novo, int):
             raise ValueError(f"campo 'lider' inválido: {novo!r}")
@@ -223,6 +234,7 @@ class Eleicao:
             self.iniciar_eleicao(f"réplica {novo} se anunciou, mas {self.meu_id} é maior")
 
     def _ao_saber_de_saida(self, replica: int) -> None:
+        """Uma réplica saiu (LWT ou aviso de saída): se era a líder, inicia uma eleição."""
         if replica == self.meu_id:
             return  # aviso antigo sobre esta própria réplica
         print(f"[ELEIÇÃO] réplica {replica} saiu")
