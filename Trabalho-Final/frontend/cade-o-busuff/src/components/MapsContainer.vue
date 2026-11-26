@@ -21,7 +21,7 @@ const mapElement = ref<HTMLElement | null>(null);
 const selectedMarkerTitle = ref('');
 const mapId = `busuff-map-${useId()}`;
 const interval = 1000;
-const broker_address = import.meta.env.VITE_MQTT_BROKER_ADDRESS ?? ''
+const broker_address = import.meta.env.VITE_MQTT_BROKER_ADDRESS ?? 'ws://localhost:8000/mqtt'
 let map: GoogleMap | undefined;
 let geoEvents: GeoEvents | undefined;
 let interval_ID: number;
