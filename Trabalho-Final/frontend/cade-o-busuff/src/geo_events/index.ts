@@ -1,20 +1,21 @@
 import mqtt, { type MqttClient } from 'mqtt';
 
 export class GeoEvents {
-	static #broker_address = 'ws://localhost:8000/mqtt';
+	#broker_address: string;
 	#cliente: MqttClient;
 	#rota: string;
 	#veiculo_id: string;
 
 	constructor(
-		rota: string, veiculo_id: string,
+		broker_address:string, rota: string, veiculo_id: string,
 		listener: (rota: string, position_json: Buffer) => void
 	) {
 
+    this.#broker_address = broker_address;
 		this.#rota = rota;
 		this.#veiculo_id = veiculo_id;
 
-		this.#cliente = mqtt.connect(GeoEvents.#broker_address, {
+		this.#cliente = mqtt.connect(this.#broker_address, {
 			keepalive: 15,
 
 			will: {
