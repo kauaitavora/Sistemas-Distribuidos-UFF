@@ -15,9 +15,9 @@
 			    required
 			>
 				    <option value="" disabled>Selecione a rota</option>
-			    <option value="rota1">Rota 1</option>
-			    <option value="rota2">Rota 2</option>
-			    <option value="rota3">Rota 3</option>
+			    <option value="rota-1">Rota 1</option>
+			    <option value="rota-2">Rota 2</option>
+			    <option value="rota-3">Rota 3</option>
 			</select>
 		    </div>
 		</div>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import { IonContent, IonIcon, IonPage } from '@ionic/vue';
+import { IonContent, IonIcon, IonPage, IonButton } from '@ionic/vue';
 import { busOutline, schoolOutline } from 'ionicons/icons';
 import { useRouter } from 'vue-router';
 import { computed, ref } from 'vue';

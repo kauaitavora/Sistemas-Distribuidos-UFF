@@ -9,9 +9,9 @@
 		interface="popover"
 		class="ion-padding-horizontal"
 	    >
-		<ion-select-option value="rota1">rota 1</ion-select-option>
-		<ion-select-option value="rota2">rota 2</ion-select-option>
-		<ion-select-option value="rota3">rota 3</ion-select-option>
+		<ion-select-option value="rota-1">Rota 1</ion-select-option>
+		<ion-select-option value="rota-2">Rota 2</ion-select-option>
+		<ion-select-option value="rota-3">Rota 3</ion-select-option>
 	    </ion-select>
 	</ion-toolbar>
     </ion-header>
