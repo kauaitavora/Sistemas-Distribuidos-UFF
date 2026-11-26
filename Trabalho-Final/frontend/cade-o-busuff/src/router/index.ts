@@ -22,10 +22,10 @@ const routes: RouteRecordRaw[] = [
 	children: [
 	    {
 		path: '',
-		redirect: '/tabs/tab1',
+		redirect: '/tabs/map',
 	    },
 	    {
-		path: 'tab1',
+		path: 'map',
 		component: () => import('@/views/Tab1Page.vue'),
 	    },
 	    {

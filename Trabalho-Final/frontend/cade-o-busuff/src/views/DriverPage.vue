@@ -99,7 +99,7 @@ function startTrip() {
   ) return;
 
   return router.push({
-    path: '/tabs/tab1',
+    path: '/tabs/map',
     query: {
       role: route.query.role,
       routeId: selectedRoute.value,
