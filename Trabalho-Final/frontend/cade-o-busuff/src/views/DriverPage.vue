@@ -12,12 +12,17 @@
 			    id="driver-route"
 			    v-model="selectedRoute"
 			    name="routeId"
+			    :disabled="carregandoRotas || erroRotas"
 			    required
 			>
-				    <option value="" disabled>Selecione a rota</option>
-			    <option value="rota-1">Rota 1</option>
-			    <option value="rota-2">Rota 2</option>
-			    <option value="rota-3">Rota 3</option>
+				<option value="" disabled>Selecione a rota</option>
+				<option
+					v-for="rota in rotas"
+					:key="rota.id"
+					:value="rota.id"
+				>
+					{{ rota.nome }}
+				</option>
 			</select>
 		    </div>
 		</div>
@@ -27,17 +32,34 @@
 			<select id="driver-vehicle"
 				v-model="selectedVehicle"
 				name="vehicleId"
+				:disabled="carregandoVeiculos || erroVeiculos || !veiculos.length"
 				required
 			>
-				    <option value="" disabled>Selecione o veículo</option>
-			    <option value="onibus-01">Ônibus 1</option>
-			    <option value="onibus-02">Ônibus 2</option>
-			    <option value="onibus-03">Ônibus 3</option>
+				<option value="" disabled>Selecione o veículo</option>
+				<option
+					v-for="veiculo in veiculos"
+					:key="veiculo.id"
+					:value="veiculo.id"
+				>
+					{{ veiculo.nome ?? veiculo.id }}
+				</option>
 			</select>
 		    </div>
 		</div>
+		<p v-if="carregandoRotas" role="status">Carregando rotas...</p>
+		<div v-else-if="erroRotas">
+		    <p role="alert">Não foi possível carregar as rotas.</p>
+		    <ion-button fill="clear" @click="carregarRotas">Tentar novamente</ion-button>
+		</div>
+		<p v-else-if="!rotas.length" role="status">Nenhuma rota disponível.</p>
+		<p v-if="carregandoVeiculos" role="status">Carregando veículos...</p>
+		<div v-else-if="erroVeiculos">
+		    <p role="alert">Não foi possível carregar os veículos.</p>
+		    <ion-button fill="clear" @click="carregarVeiculos">Tentar novamente</ion-button>
+		</div>
+		<p v-else-if="!veiculos.length" role="status">Nenhum veículo disponível.</p>
 		<ion-button color="primary" expand="block" fill="solid"
-		    :disabled="!selectedRoute || !selectedVehicle"
+		    :disabled="carregandoRotas || carregandoVeiculos || erroRotas || erroVeiculos || !selectedRoute || !selectedVehicle"
 		    @click="startTrip"
 		>
 		Iniciar viagem
@@ -50,19 +72,31 @@
 </template>
 
 <script setup lang="ts">
-import { IonContent, IonIcon, IonPage, IonButton } from '@ionic/vue';
-import { busOutline, schoolOutline } from 'ionicons/icons';
+import { IonButton, IonContent, IonPage, onIonViewWillEnter } from '@ionic/vue';
 import { useRouter } from 'vue-router';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { fetchAPI } from '@/services/APIService';
     
 const router = useRouter();
 const route = useRoute();
+
 const selectedRoute = ref('');
 const selectedVehicle = ref('');
+ 
+const rotas = ref<{ id: string; nome: string }[]>([]);
+const veiculos = ref<{ id: string; nome: string | null }[]>([]);
+const carregandoRotas = ref(false);
+const carregandoVeiculos = ref(false);
+const erroRotas = ref(false);
+const erroVeiculos = ref(false);
 
 function startTrip() {
-  if (!selectedRoute.value || !selectedVehicle.value) return;
+  if (
+    carregandoRotas.value || carregandoVeiculos.value ||
+    erroRotas.value || erroVeiculos.value ||
+    !selectedRoute.value || !selectedVehicle.value
+  ) return;
 
   return router.push({
     path: '/tabs/map',
@@ -73,6 +107,40 @@ function startTrip() {
     },
   });
 }
+
+
+const carregarRotas = async () => {
+  carregandoRotas.value = true;
+  erroRotas.value = false;
+
+  const dados = await fetchAPI('/rotas');
+  carregandoRotas.value = false;
+  erroRotas.value = dados === null;
+  if (dados === null) return;
+
+  rotas.value = dados;
+  if (!rotas.value.some((rota) => rota.id === selectedRoute.value)) {
+    selectedRoute.value = '';
+  }
+};
+
+const carregarVeiculos = async () => {
+  carregandoVeiculos.value = true;
+  erroVeiculos.value = false;
+
+  const dados = await fetchAPI('/veiculos');
+  carregandoVeiculos.value = false;
+  erroVeiculos.value = dados === null;
+  if (dados === null) return;
+
+  veiculos.value = dados;
+  if (!veiculos.value.some((veiculo) => veiculo.id === selectedVehicle.value)) {
+    selectedVehicle.value = '';
+  }
+};
+
+onIonViewWillEnter(carregarRotas);
+onIonViewWillEnter(carregarVeiculos);
 
 </script>
 

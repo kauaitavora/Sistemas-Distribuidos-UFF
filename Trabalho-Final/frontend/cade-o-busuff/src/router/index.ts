@@ -29,7 +29,8 @@ const routes: RouteRecordRaw[] = [
 		component: () => import('@/views/Tab1Page.vue'),
 	    },
 	    {
-		path: 'routes',
+		path: 'tab2',
+		name: 'horarios',
 		component: () => import('@/views/Tab2Page.vue'),
 	    },
 	],

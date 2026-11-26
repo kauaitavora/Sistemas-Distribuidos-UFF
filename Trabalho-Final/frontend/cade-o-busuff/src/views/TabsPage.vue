@@ -2,15 +2,14 @@
   <ion-page>
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
-      <ion-tab-bar slot="bottom">
-        <ion-tab-button tab="tab1" href="/tabs/map">
+      <ion-tab-bar v-if="route.query.role === 'student'" slot="bottom">
+        <ion-tab-button tab="tab1" href="/tabs/tab1?role=student">
           <ion-icon aria-hidden="true" :icon="map" />
           <ion-label>Mapa</ion-label>
         </ion-tab-button>
-
-        <ion-tab-button tab="tab2" href="/tabs/routes">
-          <ion-icon aria-hidden="true" :icon="list" />
-          <ion-label>Rotas</ion-label>
+        <ion-tab-button tab="tab2" href="/tabs/tab2?role=student">
+          <ion-icon aria-hidden="true" :icon="time" />
+          <ion-label>Horários</ion-label>
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
@@ -19,5 +18,7 @@
 
 <script setup lang="ts">
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { ellipse, list, map, square, triangle } from 'ionicons/icons';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 </script>
