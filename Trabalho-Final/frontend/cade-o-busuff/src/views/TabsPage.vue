@@ -17,7 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
+import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonPage, IonRouterOutlet } from '@ionic/vue';
+import { map, time } from 'ionicons/icons';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
