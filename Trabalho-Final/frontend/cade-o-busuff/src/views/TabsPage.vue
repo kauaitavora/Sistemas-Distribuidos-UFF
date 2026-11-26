@@ -3,7 +3,7 @@
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar v-if="route.query.role === 'student'" slot="bottom">
-        <ion-tab-button tab="tab1" href="/tabs/tab1?role=student">
+        <ion-tab-button tab="tab1" href="/tabs/map?role=student">
           <ion-icon aria-hidden="true" :icon="map" />
           <ion-label>Mapa</ion-label>
         </ion-tab-button>
