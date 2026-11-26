@@ -21,6 +21,7 @@ const mapElement = ref<HTMLElement | null>(null);
 const selectedMarkerTitle = ref('');
 const mapId = `busuff-map-${useId()}`;
 const interval = 1000;
+const broker_address = import.meta.env.VITE_MQTT_BROKER_ADDRESS ?? ''
 let map: GoogleMap | undefined;
 let geoEvents: GeoEvents | undefined;
 let interval_ID: number;
@@ -100,7 +101,7 @@ onMounted(async () => {
 	});
 
 	const mapController = new MapControler(map);
-	const events = new GeoEvents(props.routeId, props.vehicleId,
+	const events = new GeoEvents(broker_address, props.routeId, props.vehicleId,
 	    async (topic, payload) => {
 			const [prefix, routeId, vehicleId] = topic.split('/');
 			if (prefix !== 'rotas' || routeId !== props.routeId || !vehicleId) return;
