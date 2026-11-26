@@ -30,11 +30,8 @@ const routes: RouteRecordRaw[] = [
 	    },
 	    {
 		path: 'tab2',
+		name: 'horarios',
 		component: () => import('@/views/Tab2Page.vue'),
-	    },
-	    {
-		path: 'tab3',
-		component: () => import('@/views/Tab3Page.vue'),
 	    },
 	],
     },

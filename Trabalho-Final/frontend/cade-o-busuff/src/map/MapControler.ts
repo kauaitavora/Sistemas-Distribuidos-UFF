@@ -1,5 +1,7 @@
 import type { GoogleMap } from '@capacitor/google-maps';
 import type { Position } from '@capacitor/geolocation';
+import onibusAzul from '../assets/images/onibus-azul.png';
+
 
 export class MapControler {
     private readonly map: GoogleMap;
@@ -15,7 +17,7 @@ export class MapControler {
 	this.user_position = position;
     }
 
-    public async updateMarkerPosition(id: string, position: Position): Promise<void> {
+    public async updateMarkerPosition(id: string, position: Position, title: string = id): Promise<void> {
 	const previousMarkerId = this.marker_ids.get(id);
 
 	if (previousMarkerId !== undefined) {
@@ -24,12 +26,17 @@ export class MapControler {
 	}
 
 	const markerId = await this.map.addMarker({
-	    coordinate: {
-		lat: position.coords.latitude,
-		lng: position.coords.longitude,
-	    },
-	    title: id,
-	});
+		coordinate: {
+			lat: position.coords.latitude,
+			lng: position.coords.longitude,
+		},
+		title: title,
+		iconUrl: onibusAzul,
+		iconSize: {
+			width: 40,
+			height: 40,
+		},
+	})
 
 	this.marker_ids.set(id, markerId);
     }
