@@ -4,7 +4,7 @@
 	<ion-toolbar>
 	    <ion-select
 		v-model="selectedRoute"
-		label="rota"
+		label="Rota"
 		name="routeId"
 		interface="popover"
 		class="ion-padding-horizontal"
@@ -67,7 +67,7 @@ watch(
   () => [route.query.routeId, route.query.vehicleId],
   ([routeId, vehicleId]) => {
     selectedRoute.value =
-      typeof routeId === 'string' ? routeId : 'rota1';
+      typeof routeId === 'string' ? routeId : 'rota-1';
     
     selectedVehicle.value =
       typeof vehicleId === 'string' ? vehicleId : '';

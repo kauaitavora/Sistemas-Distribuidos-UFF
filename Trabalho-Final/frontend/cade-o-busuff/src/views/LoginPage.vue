@@ -32,7 +32,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 function selectRole(role: 'driver' | 'student') {
-     const path = role === 'driver' ? '/login/driver-options' : '/tabs/tab1';
+     const path = role === 'driver' ? '/login/driver-options' : '/tabs/map';
      return router.push({path, query: {role} });
 }
 

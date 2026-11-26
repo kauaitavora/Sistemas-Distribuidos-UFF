@@ -49,7 +49,7 @@ export class GeoEvents {
     sendPosition(position_json: string): void {
 	  this.#cliente.publish(
 		'rotas/' + this.#rota + '/' + this.#veiculo_id,
-		position_json, { qos: 1, retain: true }
+		position_json, { qos: 1 }
 	  );
     }
 

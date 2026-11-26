@@ -16,6 +16,10 @@ export class MapControler {
     }
 
     public async updateMarkerPosition(id: string, position: Position): Promise<void> {
+	const [_, routeId, vehicleId] = id.split('/');
+	const routeName = routeId.replace('r', 'R').replace('-', ' ');
+	const vehicleName = vehicleId.replace('o', 'Ô').replace('-', ' ');
+
 	const previousMarkerId = this.marker_ids.get(id);
 
 	if (previousMarkerId !== undefined) {
@@ -28,7 +32,7 @@ export class MapControler {
 		lat: position.coords.latitude,
 		lng: position.coords.longitude,
 	    },
-	    title: id,
+	    title: routeName + ' - ' + vehicleName
 	});
 
 	this.marker_ids.set(id, markerId);
