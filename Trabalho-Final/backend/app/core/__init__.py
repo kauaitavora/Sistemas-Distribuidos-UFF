@@ -1,0 +1,1 @@
+# Marca a pasta "core" como um pacote Python (configurações centrais do backend).

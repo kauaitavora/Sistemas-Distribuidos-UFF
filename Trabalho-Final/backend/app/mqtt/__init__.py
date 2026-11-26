@@ -1,0 +1,1 @@
+# Marca a pasta "mqtt" como pacote Python (assinante e simulador do backend).

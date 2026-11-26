@@ -1,0 +1,1 @@
+# Marca a pasta "api" como pacote Python (grupos de rotas da API REST).
